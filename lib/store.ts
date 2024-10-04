@@ -48,7 +48,7 @@ export const store = create<StoreType>()(
       currentUser: null,
       isLoading: true,
 
-      getUserInfo: async (uid: string) => {
+      getUserInfo: async (uid: any) => {
         if (!uid) return set({ currentUser: null, isLoading: false });
 
         const docRef = doc(db, "users", uid);
@@ -64,7 +64,7 @@ export const store = create<StoreType>()(
         }
       },
 
-      getUserByEmail: async (email: string) => {
+      getUserByEmail: async (email: any) => {
         const userRef = doc(db, "users", email); // Adjust based on your database structure
         const userDoc = await getDoc(userRef);
         
