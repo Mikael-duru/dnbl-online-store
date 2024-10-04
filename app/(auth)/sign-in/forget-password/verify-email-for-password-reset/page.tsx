@@ -1,19 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Mail } from "lucide-react";
-import { sendPasswordResetEmail } from "firebase/auth";
+// import { sendPasswordResetEmail } from "firebase/auth";
 
 import ButtonPrimary from "@/components/ButtonPrimary";
-import { auth } from "@/firebase/firebase";
-import toast from "react-hot-toast";
+// import { auth } from "@/firebase/firebase";
+// import toast from "react-hot-toast";
 
 function ForgetPassword() {
 	const [email, setEmail] = useState("");
 	const [errors, setErrors] = useState({ email: "" });
-	const router = useRouter();
+	// const router = useRouter();
 
 	const validateEmail = (email: string) => {
 		return /\S+@\S+\.\S+/.test(email);

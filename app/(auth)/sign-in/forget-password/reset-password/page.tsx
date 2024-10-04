@@ -10,7 +10,6 @@ import {
 	FormControl,
 	FormField,
 	FormItem,
-	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
 import {
@@ -40,10 +39,6 @@ function PasswordResetCode() {
 			`You submitted the following ${JSON.stringify(data, null, 2)}`
 		);
 	}
-
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-	};
 
 	return (
 		<section className="flex min-h-screen items-center justify-center bg-white shrink-0">

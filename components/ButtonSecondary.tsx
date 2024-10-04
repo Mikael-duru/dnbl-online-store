@@ -7,12 +7,7 @@ interface ButtonProps {
 	onClick?: () => void;
 }
 
-const ButtonSecondary: React.FC<ButtonProps> = ({
-	label,
-	onClick,
-	type,
-	disabled,
-}) => {
+const ButtonSecondary: React.FC<ButtonProps> = ({ label, onClick }) => {
 	return (
 		<button
 			onClick={onClick}

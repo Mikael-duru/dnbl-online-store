@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
 	CircleUserRound,
 	ShoppingBag,
-	Heart,
-	BellRing,
+	// Heart,
+	// BellRing,
 	Settings,
 	LogOut,
 } from "lucide-react";
@@ -21,10 +21,8 @@ import {
 	AlertDialogAction,
 	AlertDialogCancel,
 	AlertDialogContent,
-	AlertDialogDescription,
 	AlertDialogFooter,
 	AlertDialogHeader,
-	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import LogOutModal from "../LogOutModal";

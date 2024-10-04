@@ -1,11 +1,11 @@
 import { auth } from "@/firebase/firebase";
 import { FacebookAuthProvider, signInWithPopup } from "firebase/auth";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import React from "react";
 import { SiFacebook } from "react-icons/si";
 
 function SignInWithFacebook() {
-	const router = useRouter();
+	// const router = useRouter();
 
 	const handleFacebookLogin = async () => {
 		const provider = new FacebookAuthProvider();

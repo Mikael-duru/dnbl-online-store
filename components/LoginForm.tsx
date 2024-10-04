@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Mail } from "lucide-react";
 import Link from "next/link";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "@/firebase/firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { auth } from "@/firebase/firebase";
+// import { doc, getDoc, setDoc } from "firebase/firestore";
 
 import Button from "./Button";
 import Image from "next/image";
@@ -21,7 +21,7 @@ export default function LoginForm() {
 	const [showPassword, setShowPassword] = useState(false);
 	const [errors, setErrors] = useState({ email: "", password: "" });
 	const [loading, setLoading] = useState(false);
-	const [errMsg, setErrMsg] = useState("");
+	// const [errMsg, setErrMsg] = useState("");
 	const router = useRouter();
 
 	const validateEmail = (email: string) => {
@@ -77,13 +77,15 @@ export default function LoginForm() {
 			try {
 				setLoading(true);
 
-				const userCredential = await signInWithEmailAndPassword(
-					auth,
-					email,
-					password
-				);
+				await signInWithEmailAndPassword(auth, email, password);
 
-				const user = userCredential.user;
+				// const userCredential = await signInWithEmailAndPassword(
+				// 	auth,
+				// 	email,
+				// 	password
+				// );
+
+				// const user = userCredential.user;
 
 				// if (user.emailVerified) {
 				// 	// Retrieve user data from local storage
@@ -237,7 +239,7 @@ export default function LoginForm() {
 					</Link>
 				</div>
 
-				{errMsg && <AlertCard alert={errMsg} />}
+				{/* {errMsg && <AlertCard alert={errMsg} />} */}
 
 				<div className="pt-4">
 					{/* Submit form */}

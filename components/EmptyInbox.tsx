@@ -22,7 +22,7 @@ const EmptyInbox = () => {
 				Your inbox is empty!
 			</h2>
 			<p className="font-open-sans font-normal text-base sm:text-xl text-figure-text text-center  dark:text-white">
-				We'll notify you when there's a new message.
+				We&apos;ll notify you when there&apos;s a new message.
 			</p>
 
 			<div className="flex justify-center mt-10">

@@ -5,7 +5,7 @@ import { User, Eye, EyeOff, Mail } from "lucide-react";
 import Link from "next/link";
 import {
 	createUserWithEmailAndPassword,
-	sendEmailVerification,
+	// sendEmailVerification,
 } from "firebase/auth";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
@@ -30,7 +30,7 @@ export default function RegisterForm() {
 		email: "",
 		password: "",
 	});
-	const [errMsg, setErrMsg] = useState("");
+	// const [errMsg, setErrMsg] = useState("");
 	const router = useRouter();
 
 	const validateEmail = (email: string) => {
@@ -367,7 +367,7 @@ export default function RegisterForm() {
 						.
 					</p>
 
-					{errMsg && <AlertCard alert={errMsg} />}
+					{/* {errMsg && <AlertCard alert={errMsg} />} */}
 
 					{/* Submit form */}
 					<Button

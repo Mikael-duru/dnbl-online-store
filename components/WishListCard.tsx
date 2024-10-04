@@ -31,7 +31,7 @@ const WishListCard = ({ product }: { product: ProductType }) => {
 	};
 
 	const handleRecentlyViewed = () => {
-		let recentlyViewed = JSON.parse(
+		const recentlyViewed = JSON.parse(
 			localStorage.getItem("recentlyViewed") || "[]"
 		);
 		const productExists = recentlyViewed.find(

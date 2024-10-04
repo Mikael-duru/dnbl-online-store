@@ -6,18 +6,19 @@ function TermsAndConditions() {
 		<main className="bg-white dark:bg-[#2E2E2E]">
 			<section className="mx-auto px-[5%] py-8 xl:px-[100px] font-open-sans">
 				<h1 className="text-2xl sm:text-3xl font-bold mb-6 xl:text-center">
-					General Terms and Conditions for Buyers on D'Nobles Limited Fashion
-					Store
+					General Terms and Conditions for Buyers on D&apos;Nobles Limited
+					Fashion Store
 				</h1>
 
 				<ol className="space-y-4 list-decimal list-inside font-semibold">
 					<li className="policy-list">
 						<h2 className="policy-heading">Introduction</h2>
 						<p className="policy-text">
-							<span className="font-semibold">1.1.</span> "D'Nobles Limited"
-							("D'Nobles," "we," or "us") operates an online platform that
-							provides a website for the sale and purchase of fashion products
-							including apparel and other fashion-related items.
+							<span className="font-semibold">1.1.</span> &quot;D&apos;Nobles
+							Limited&quot; (&quot;D&apos;Nobles,&quot; &quot;we,&quot; or
+							&quot;us&quot;) operates an online platform that provides a
+							website for the sale and purchase of fashion products including
+							apparel and other fashion-related items.
 						</p>
 						<p className="policy-text">
 							<span className="font-semibold">1.2.</span> These terms and
@@ -39,9 +40,9 @@ function TermsAndConditions() {
 							</li>
 							<li>Bind both yourself and your organization to these terms;</li>
 							<li>
-								Agree that all references to "you" apply to both the individual
-								user and the business entity unless the context requires
-								otherwise.
+								Agree that all references to &quot;you&quot; apply to both the
+								individual user and the business entity unless the context
+								requires otherwise.
 							</li>
 						</ul>
 					</li>
@@ -93,8 +94,8 @@ function TermsAndConditions() {
 						<p className="policy-text">
 							<span className="font-semibold">3.1.</span> By purchasing on our
 							platform, you acknowledge and agree that: The website is an online
-							venue for you [buyer] to purchase fashion products from D'Nobles
-							Limited;
+							venue for you [buyer] to purchase fashion products from
+							D&apos;Nobles Limited;
 						</p>
 						<p className="policy-text">
 							<span className="font-semibold">3.2.</span> By making a purchase
@@ -156,7 +157,8 @@ function TermsAndConditions() {
 						<h2 className="policy-heading">Promotions</h2>
 						<p className="policy-text">
 							<span className="font-semibold">6.1.</span> Promotions run by
-							D'Nobles will be governed by their specific terms and conditions.
+							D&apos;Nobles will be governed by their specific terms and
+							conditions.
 						</p>
 					</li>
 

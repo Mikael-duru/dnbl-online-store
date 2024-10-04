@@ -5,15 +5,15 @@ function PrivacyNotice() {
 		<main className="bg-white dark:bg-[#2E2E2E]">
 			<section className="mx-auto px-[5%] py-8 xl:px-[100px] font-open-sans">
 				<h1 className="text-2xl sm:text-3xl font-bold mb-6 xl:text-center">
-					D'Nobles Limited Privacy Notice
+					D&apos;Nobles Limited Privacy Notice
 				</h1>
 
 				<ol className="space-y-4 list-decimal list-inside font-semibold">
 					<li className="policy-list">
 						<h2 className="policy-heading">About This Notice</h2>
 						<p className="policy-text">
-							This Privacy Notice explains how D'Nobles Limited collects, uses,
-							and safeguards your personal information when you visit our
+							This Privacy Notice explains how D&apos;Nobles Limited collects,
+							uses, and safeguards your personal information when you visit our
 							website. It also outlines your rights concerning your personal
 							data and how you can exercise them.
 						</p>
@@ -22,11 +22,11 @@ function PrivacyNotice() {
 					<li className="policy-list">
 						<h2 className="policy-heading">Who We Are</h2>
 						<p className="policy-text">
-							D'Nobles Limited is a fashion brand specializing in African prints
-							and unique clothing designs. Our platform enables customers to
-							explore and purchase our products online. This website is managed
-							by D'Nobles Limited, and any personal data collected is controlled
-							by us.
+							D&apos;Nobles Limited is a fashion brand specializing in African
+							prints and unique clothing designs. Our platform enables customers
+							to explore and purchase our products online. This website is
+							managed by D&apos;Nobles Limited, and any personal data collected
+							is controlled by us.
 						</p>
 					</li>
 

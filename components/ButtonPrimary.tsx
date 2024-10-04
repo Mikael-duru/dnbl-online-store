@@ -13,8 +13,6 @@ const ButtonPrimary: React.FC<ButtonProps> = ({
 	maxWidth,
 	height,
 	label,
-	type,
-	disabled,
 	onClick,
 }) => {
 	return (

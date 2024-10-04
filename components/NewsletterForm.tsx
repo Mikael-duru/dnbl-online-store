@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Modal from "./Modal";
+import Image from "next/image";
 
 const NewsletterForm = () => {
 	const [email, setEmail] = useState("");
@@ -79,7 +80,7 @@ const NewsletterForm = () => {
 					type="submit"
 					className="bg-btn-gold h-full w-[50px] flex justify-center items-center outline-none"
 				>
-					<img src="/assets/footer-right-arrow.svg" alt="Submit" />
+					<Image src="/assets/footer-right-arrow.svg" alt="Submit" />
 				</button>
 			</form>
 			{error && (

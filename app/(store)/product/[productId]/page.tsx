@@ -76,7 +76,7 @@ const ProductDetail = () => {
 	];
 
 	const validateForm = (): Partial<Review> => {
-		let validationErrors: Partial<Review> = {};
+		const validationErrors: Partial<Review> = {};
 		if (!reviewTitle)
 			validationErrors.reviewTitle = "Review title is required.";
 		if (!reviewMessage)

@@ -5,15 +5,16 @@ const CookieNotice = () => {
 		<main className="bg-white dark:bg-[#2E2E2E]">
 			<section className="mx-auto px-[5%] py-8 xl:px-[100px] font-open-sans">
 				<h1 className="text-2xl sm:text-3xl font-bold mb-6 xl:text-center">
-					D'Nobles Limited Cookie Notice
+					D&apos;Nobles Limited Cookie Notice
 				</h1>
 
 				<p className="policy-text pb-4">
-					This Cookie Notice provides information on how D'Nobles Limited ("we,"
-					"our," or "us") uses cookies when you visit our website. Any personal
-					data provided to or collected by D'Nobles Limited via cookies and
-					other tracking technologies is controlled by us. Please familiarize
-					yourself with our cookie practices.
+					This Cookie Notice provides information on how D&apos;Nobles Limited
+					(&ldquo;we,&ldquo; &ldquo;our,&ldquo; or &ldquo;us&ldquo;) uses
+					cookies when you visit our website. Any personal data provided to or
+					collected by D&apos;Nobles Limited via cookies and other tracking
+					technologies is controlled by us. Please familiarize yourself with our
+					cookie practices.
 				</p>
 
 				<h2 className="policy-heading text-xl font-semibold mb-2">
@@ -61,8 +62,9 @@ const CookieNotice = () => {
 				<ul className="policy-list list-disc list-inside pl-6 pb-4">
 					<li className="policy-list pb-2">
 						<strong>Strictly Necessary Cookies:</strong> Essential for the
-						website's operation, enabling functionalities such as the shopping
-						cart and checkout process. These cookies cannot be disabled.
+						website&apos;s operation, enabling functionalities such as the
+						shopping cart and checkout process. These cookies cannot be
+						disabled.
 					</li>
 					<li className="policy-list pb-2">
 						<strong>Analytics Cookies:</strong> Help us understand how you use

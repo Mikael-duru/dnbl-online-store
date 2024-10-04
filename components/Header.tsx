@@ -27,7 +27,7 @@ import ButtonPrimary from "./ButtonPrimary";
 import ButtonSecondary from "./ButtonSecondary";
 import useCart from "@/lib/hook/useCart";
 import { auth, db } from "@/firebase/firebase";
-import { getDoc, setDoc, doc } from "firebase/firestore";
+import { getDoc, doc } from "firebase/firestore";
 import toast from "react-hot-toast";
 
 const primaryNavigation = [

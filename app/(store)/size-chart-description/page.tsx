@@ -24,15 +24,15 @@ const SizeChartDescription: React.FC = () => {
 				<p className="font-open-sans font-normal text-black text-base sm:text-lg xl:text-2xl mb-8">
 					Ensuring the perfect fit is crucial for comfort and style. Use our
 					comprehensive size charts to find the right size for your next
-					purchase. Whether you're shopping for yourself or a loved one, we've
-					made it easy to select the size that suits you best.
+					purchase. Whether you&apos;re shopping for yourself or a loved one,
+					we&apos;ve made it easy to select the size that suits you best.
 				</p>
 
 				{/* Size chart images */}
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-8 xl:gap-4 mb-11">
 					<div className="text-center">
 						<h2 className="font-open-sans font-semibold text-black text-2xl md:text-[17px] mb-2">
-							Men's Trouser Size Chart
+							Men&apos;s Trouser Size Chart
 						</h2>
 						<Image
 							src="/assets/men-trousers-sizes.png"
@@ -44,7 +44,7 @@ const SizeChartDescription: React.FC = () => {
 					</div>
 					<div className="text-center">
 						<h2 className="font-open-sans font-semibold text-black text-2xl md:text-[17px] mb-2">
-							Women's Size Chart
+							Women&apos;s Size Chart
 						</h2>
 						<Image
 							src="/assets/women-size-chart.png"
@@ -56,7 +56,7 @@ const SizeChartDescription: React.FC = () => {
 					</div>
 					<div className="text-center">
 						<h2 className="font-open-sans font-semibold text-black text-2xl md:text-[17px] mb-2">
-							Men's Top Size Chart
+							Men&apos;s Top Size Chart
 						</h2>
 						<Image
 							src="/assets/men-top-sizes.png"

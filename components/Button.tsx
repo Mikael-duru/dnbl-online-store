@@ -12,8 +12,6 @@ interface ButtonProps {
 const Button: React.FC<ButtonProps> = ({
 	backgroundColor = "#919191", // Default color
 	label,
-	type,
-	disabled,
 	className,
 	onClick,
 }) => {

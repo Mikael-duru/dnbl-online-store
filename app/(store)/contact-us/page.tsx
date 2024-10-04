@@ -81,7 +81,7 @@ function ContactUs() {
 
 			<section className="pt-10 pb-12 px-[5%] lg:px-[147px] sm:pb-[129px] bg-white dark:bg-[#1E1E1E]">
 				<h2 className="text-black dark:text-white text-center font-open-sans text-2xl sm:text-[40px] font-semibold leading-normal pb-2">
-					Can't find what you are looking for? Get in touch!
+					Can&apos;t find what you are looking for? Get in touch!
 				</h2>
 				<p className="text-black dark:text-gray-300 text-center font-open-sans sm:text-2xl font-normal leading-normal pb-[40px]">
 					Leave us a message and our support team will get back to you in 24
