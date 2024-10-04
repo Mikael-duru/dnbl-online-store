@@ -30,8 +30,9 @@ function AccountVerification() {
 				try {
 					// Verify the email using the oobCode
 					await applyActionCode(auth, code);
-
-					getUserByEmail(email); // Fetch user info from your store
+					if (email) {
+						getUserByEmail(email); // Only call if email is not null, Fetch user info from your store
+					}
 					if (currentUser) {
 						console.log(currentUser?.emailVerified);
 						setIsVerified(true);
