@@ -25,7 +25,8 @@ const ITEMS_PER_PAGE = 30;
 const COOKIE_NAME = "currentTrendyProductsPage";
 
 function ProductCategory({ params }: any) {
-	const categoryType = getCategoryType(params?.categoryName);
+	const categoryType =
+		getCategoryType(params.categoryName) || "defaultCategory";
 	const filteredCategoryProduct = getFilteredCategoryProducts(categoryType);
 	const router = useRouter();
 	const [currentPage, setCurrentPage] = useState(1);

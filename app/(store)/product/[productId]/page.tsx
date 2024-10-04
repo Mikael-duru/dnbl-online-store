@@ -3,14 +3,13 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CircleArrowLeft, UserRoundCheck } from "lucide-react";
-import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star } from "lucide-react";
 import { FaStar } from "react-icons/fa";
 import { useSearchParams } from "next/navigation"; // For dynamic route params
 import { store } from "@/lib/store";
 import { auth } from "@/firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 import Gallery from "@/components/Gallery";
 import ProductInfo from "@/components/ProductInfo";
@@ -28,7 +27,7 @@ interface Review {
 	name: string;
 	ImageUrl: string;
 	date: string;
-	rating: number;
+	rating: any;
 	reviewTitle: string;
 	reviewMessage: string;
 }
@@ -55,7 +54,9 @@ const ProductDetail = () => {
 		}
 
 		const unSub = onAuthStateChanged(auth, (user) => {
-			getUserInfo(user?.uid);
+			if (user) {
+				getUserInfo(user?.uid);
+			}
 			// setIsAuthenticated(!!user); // Set authentication status
 		});
 		return () => {
@@ -118,11 +119,11 @@ const ProductDetail = () => {
 		}
 	};
 
-	const handleRatingClick = (rating: number) => {
+	const handleRatingClick = (rating: any) => {
 		setSelectedRating(rating);
 
 		// Real-time validation for rating
-		if (rating === 0) {
+		if (typeof rating !== "number" || rating === 0) {
 			setErrors((prev) => ({ ...prev, rating: "Please provide a rating." }));
 		} else {
 			setErrors((prev) => ({ ...prev, rating: undefined }));
@@ -144,15 +145,7 @@ const ProductDetail = () => {
 		if (Object.keys(validationErrors).length === 0) {
 			const newReview: Review = {
 				name: currentUser?.displayName || "Anonymous",
-				ImageUrl: currentUser ? (
-					currentUser.photoURL
-				) : (
-					<Avatar className="w-12 h-12 rounded-full shrink-0 focus:ring-1 focus:ring-[#B47B2B] duration-200 cursor-pointer">
-						<AvatarFallback className="font-libre-franklin tracking-wide">
-							<UserRoundCheck size={24} />
-						</AvatarFallback>
-					</Avatar>
-				),
+				ImageUrl: currentUser.photoURL,
 				date: new Date().toLocaleDateString(),
 				rating: selectedRating,
 				reviewTitle,
@@ -212,15 +205,20 @@ const ProductDetail = () => {
 					reviews.slice(0, 6).map((review, index) => (
 						<div key={index} className="mb-8">
 							<div className="mb-[22px] flex sm:items-center gap-4">
-								<div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
-									<Image
-										src={review?.ImageUrl}
-										width={48}
-										height={48}
-										alt="User Profile"
-										className="w-full h-full object-cover aspect-auto"
-									/>
-								</div>
+								{currentUser?.photoURL || review?.ImageUrl ? (
+									<Avatar className="w-12 h-12 shrink-0">
+										<AvatarImage
+											src={currentUser?.photoURL || review?.ImageUrl}
+											alt={"User profile picture"}
+										/>
+									</Avatar>
+								) : (
+									<Avatar className="w-12 h-12 shrink-0">
+										<AvatarFallback className="text-2xl font-libre-franklin tracking-wide">
+											<UserRoundCheck size={24} />
+										</AvatarFallback>
+									</Avatar>
+								)}
 								<div className="flex-1 flex max-sm:flex-col gap-3 justify-between items-start flex-wrap">
 									<div>
 										<h2 className="font-open-sans font-semibold text-xl leading-[27.24px] tracking-[-0.02em] text-figure-text mb-[2px] sm:mb-1 dark:text-white">

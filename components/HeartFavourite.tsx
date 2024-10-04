@@ -28,7 +28,9 @@ const HeartFavorite = ({ product }: HeartFavoriteProps) => {
 	// Check authentication state
 	useEffect(() => {
 		const unSub = onAuthStateChanged(auth, (user) => {
-			getUserInfo(user?.uid);
+			if (user) {
+				getUserInfo(user?.uid);
+			}
 		});
 		return () => {
 			unSub();
