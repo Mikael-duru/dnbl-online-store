@@ -123,7 +123,7 @@ const ReviewsPage = () => {
 											) : isHalfStar ? (
 												<FaStarHalfAlt className="w-6 h-6 text-[#FFCE31]" />
 											) : (
-												<FaRegStar className="w-6 h-6 text-figure-text" />
+												<FaRegStar className="w-6 h-6 text-figure-text dark:text-gray-300" />
 											)}
 										</span>
 									);

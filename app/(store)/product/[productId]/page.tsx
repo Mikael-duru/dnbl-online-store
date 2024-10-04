@@ -234,7 +234,10 @@ const ProductDetail = () => {
 												i < review.rating ? (
 													<FaStar key={i} className="w-6 h-6 text-[#FFCE31]" />
 												) : (
-													<Star key={i} className="w-6 h-6 text-figure-text" />
+													<Star
+														key={i}
+														className="w-6 h-6 text-figure-text dark:text-gray-300"
+													/>
 												)
 											)}
 										</div>
