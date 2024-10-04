@@ -80,7 +80,12 @@ const NewsletterForm = () => {
 					type="submit"
 					className="bg-btn-gold h-full w-[50px] flex justify-center items-center outline-none"
 				>
-					<Image src="/assets/footer-right-arrow.svg" alt="Submit" />
+					<Image
+						src="/assets/footer-right-arrow.svg"
+						alt="Submit"
+						width={24}
+						height={24}
+					/>
 				</button>
 			</form>
 			{error && (

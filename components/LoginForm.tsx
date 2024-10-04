@@ -4,14 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Mail } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
+import toast from "react-hot-toast";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebase/firebase";
 // import { doc, getDoc, setDoc } from "firebase/firestore";
 
 import Button from "./Button";
-import Image from "next/image";
-import toast from "react-hot-toast";
-import AlertCard from "./AlertCard";
+// import AlertCard from "./AlertCard";
 import SignInWithGoogle from "./SignInWithGoogle";
 import SignInWithFacebook from "./SignInWithFacebook";
 

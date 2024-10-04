@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import Button from "./Button";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/firebase/firebase";
-import AlertCard from "./AlertCard";
+// import AlertCard from "./AlertCard";
 
 export default function RegisterForm() {
 	const [loading, setLoading] = useState(false);

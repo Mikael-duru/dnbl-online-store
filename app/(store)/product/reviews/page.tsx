@@ -171,7 +171,7 @@ const ReviewsPage = () => {
 					<div key={index} className="mb-8">
 						<div className="mb-[22px] flex sm:items-center gap-4">
 							<div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
-								<img
+								<Image
 									src={review?.userImageUrl}
 									width={48}
 									height={48}

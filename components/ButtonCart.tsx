@@ -14,9 +14,7 @@ const ButtonCart: React.FC<ButtonProps> = ({
 	maxWidth,
 	height,
 	label,
-	type,
 	className,
-	disabled,
 	onClick,
 }) => {
 	return (

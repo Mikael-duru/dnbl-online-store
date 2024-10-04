@@ -5,6 +5,7 @@
     "prefer-const": "warn",  // Changes 'prefer-const' to a warning instead of an error
     "@typescript-eslint/no-empty-interface": "off",  // Disables empty interface rule
     "@typescript-eslint/no-unused-vars": "warn",  // Changes unused variables to a warning
-    "react-hooks/exhaustive-deps": "off"  // Disables warning for missing dependencies in useEffect
+    "react-hooks/exhaustive-deps": "off",  // Disables warning for missing dependencies in useEffect
+    "@typescript-eslint/no-empty-object-type": "off"
   }
 }
