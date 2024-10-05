@@ -72,7 +72,7 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
 			</div>
 
 			{productInfo?.colors.length > 0 && (
-				<div className="flex flex-col gap-4 mb-6">
+				<div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
 					<p className="font-open-sans font-normal text-lg text-black dark:text-white">
 						Available Colors:
 					</p>
@@ -92,7 +92,7 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
 			)}
 
 			{productInfo?.sizes?.length > 0 && (
-				<div className="flex flex-col gap-4 mb-4">
+				<div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
 					<p className="font-open-sans font-normal text-lg  text-black dark:text-white">
 						Available Sizes:
 					</p>

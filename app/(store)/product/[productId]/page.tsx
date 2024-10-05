@@ -180,7 +180,7 @@ const ProductDetail = () => {
 					onClick={handleBack}
 				/>
 
-				<div className="flex justify-center xl:justify-start gap-10 lg:gap-12 xl:gap-16 max-lg:flex-col max-md:items-center">
+				<div className="flex justify-center xl:justify-start gap-10 lg:gap-12 xl:gap-16 max-lg:flex-col">
 					<Gallery productMedia={product?.media} />
 					<ProductInfo productInfo={product} />
 				</div>
