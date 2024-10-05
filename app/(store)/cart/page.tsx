@@ -72,7 +72,7 @@ const Cart = () => {
 			if (cart?.cartItems.length === 0) {
 				setErrors({ country: "Please add item to cart." });
 			} else {
-				router.push("/cart/checkout");
+				router.push("/cart/checkout-page");
 			}
 		} else if (country === "US" || country === "CA") {
 			if (cart?.cartItems.length === 0) {
