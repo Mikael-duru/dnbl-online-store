@@ -236,10 +236,14 @@ export default function Home() {
 					<h2 className="text-2xl xs:text-3xl font-bold font-open-sans text-[#333] dark:text-white my-5 xs:mt-6 xs:mb-[27px]">
 						Your Feedback Matters: Embrace a Journey of Collaboration with Us!
 					</h2>
-					<p className="text-[#767676] dark:text-gray-300 text-xs font-open-sans mb-6 sm:mb-[44.96px]">
+					<p className="text-[#767676] dark:text-gray-300 text-sm font-open-sans mb-6 sm:mb-[44.96px]">
 						At DNBL, your input matters. We welcome your feedback and
-						partnership requests to improve our platform and services. You can
-						also contact us for bulk purchases or to become a sales middleman.
+						partnership requests to improve our platform and services.{" "}
+						<span className="text-gold-text">
+							{" "}
+							You can also contact us for bulk purchases or to become a sales
+							middleman.
+						</span>{" "}
 						We value collaboration and are always open to new opportunities to
 						grow together.
 					</p>
