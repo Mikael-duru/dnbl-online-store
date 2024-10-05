@@ -57,7 +57,7 @@ const HeartFavorite = ({ product }: HeartFavoriteProps) => {
 
 	return (
 		<button onClick={handleLike}>
-			<Heart size={24} fill={isLiked ? "red" : "white"} />
+			<Heart size={16} fill={isLiked ? "red" : "white"} />
 		</button>
 	);
 };

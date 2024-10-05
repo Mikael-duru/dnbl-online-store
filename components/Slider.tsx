@@ -14,7 +14,7 @@ function Slider({ prods }: any) {
 		<Carousel>
 			<CarouselContent className="flex">
 				{prods?.map((prod: any) => (
-					<div className="w-[260px] shrink-0" key={prod._id}>
+					<div className="shrink-0" key={prod._id}>
 						<CarouselItem>
 							<ProductCard key={prod._id} product={prod} />
 						</CarouselItem>

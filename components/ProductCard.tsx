@@ -73,8 +73,8 @@ const ProductCard = ({ product }: { product: ProductType }) => {
 	};
 
 	return (
-		<div className="bg-white dark:bg-[#4E4E4E] border-[1.47px] rounded-[5.87px] border-product-card-border px-[9.46px] py-[11.74px] max-sm:w-[247px] mx-auto overflow-hidden hover:scale-[.96] hover:shadow-md transition-all ease-in cursor-pointer relative">
-			<div className="absolute top-5 right-5 p-1 rounded-full bg-white dark:bg-[#3E3E3E] flex items-center justify-center h-[36px] w-[36px]">
+		<div className="bg-white dark:bg-[#4E4E4E] border-[1.47px] rounded-[5.87px] border-product-card-border px-[9.46px] py-[11.74px] max-sm:w-[160px] overflow-hidden hover:scale-[.96] hover:shadow-md transition-all ease-in cursor-pointer relative">
+			<div className="absolute top-5 right-5 p-1 rounded-full bg-white dark:bg-[#3E3E3E] flex items-center justify-center h-[20px] w-[20px]">
 				<HeartFavorite product={product} />
 			</div>
 			<Link
@@ -82,13 +82,13 @@ const ProductCard = ({ product }: { product: ProductType }) => {
 				key={product?._id}
 				onClick={handleRecentlyViewed}
 			>
-				<div className="h-[263px]">
+				<div className="">
 					<Image
 						src={product?.media[0]}
 						alt={product?.productName}
-						width={300}
-						height={300}
-						className="w-[250px] h-[260px] object-cover rounded-lg cursor-pointer"
+						width={100}
+						height={100}
+						className="w-[160px] h-[150px] object-cover rounded-lg cursor-pointer"
 					/>
 				</div>
 				<div className="pt-[11.74px] px-1">
@@ -97,21 +97,21 @@ const ProductCard = ({ product }: { product: ProductType }) => {
 					</h3>
 					<div>
 						{product?.newPrice ? (
-							<p className="text-[14.67px] font-bold font-open-sans text-figure-text dark:text-white pb-2 flex items-baseline gap-[5.47px]">
-								₦{product.newPrice.toLocaleString()} &nbsp;
-								<span className="line-through font-normal text-[11.74px] leading-[15.98px] text-old-price-text">
+							<p className="text-sm font-bold font-open-sans text-figure-text dark:text-white pb-2 flex items-baseline gap-[5.47px]">
+								₦{product.newPrice.toLocaleString()}
+								<span className="line-through font-normal text-xs leading-[15.98px] text-old-price-text">
 									₦{product.oldPrice.toLocaleString()}
 								</span>
 							</p>
 						) : (
-							<p className="text-[14.67px] font-bold font-open-sans text-figure-text dark:text-white pb-2">
+							<p className="text-sm font-bold font-open-sans text-figure-text dark:text-white pb-2">
 								₦{product.oldPrice.toLocaleString()}
 							</p>
 						)}
 					</div>
 
 					{/* Rating and Reviews */}
-					<div className="flex items-center gap-[8.8px]">
+					<div className="flex items-center gap-1">
 						{[...Array(5)].map((_, i) => {
 							const fullStar = Math.floor(averageRating);
 							const isHalfStar =
@@ -120,17 +120,17 @@ const ProductCard = ({ product }: { product: ProductType }) => {
 							return (
 								<span key={i}>
 									{i < fullStar ? (
-										<FaStar className="h-[14.67px] w-[14.67px] text-star-rating-color" />
+										<FaStar className="w-3 h-3 text-star-rating-color" />
 									) : isHalfStar ? (
-										<FaStarHalfAlt className="h-[14.67px] w-[14.67px] text-star-rating-color" />
+										<FaStarHalfAlt className="w-3 h-3 text-star-rating-color" />
 									) : (
-										<FaRegStar className="h-[14.67px] w-[14.67px] text-star-rating-color" />
+										<FaRegStar className="w-3 h-3 text-star-rating-color" />
 									)}
 								</span>
 							);
 						})}
 
-						<p className="text-xs font-medium text-black dark:text-gray-300 font-rubik pt-[1px]">
+						<p className="text-[11.74px] font-medium text-black dark:text-gray-300 font-rubik pt-[1px]">
 							{averageRating} ({reviews.length})
 						</p>
 					</div>
@@ -151,7 +151,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
 			<Dialog>
 				<DialogTrigger disabled={disabled} className="w-full">
 					<div
-						className={`flex flex-col justify-center items-center p-4 lg:px-[17.6px] gap-[7.33px] w-full shadow-btn-shadow rounded-lg text-base font-libre-franklin font-semibold text-white bg-btn-gold hover:scale-95 duration-300 mt-5 mb-1 ${
+						className={`flex flex-col justify-center items-center py-2 px-4 lg:px-[17.6px] gap-[7.33px] w-full shadow-btn-shadow rounded-lg text-sm sm:text-base font-libre-franklin font-semibold text-white bg-btn-gold hover:scale-95 duration-300 mt-5 mb-1 ${
 							disabled ? "cursor-not-allowed" : "cursor-pointer"
 						}`}
 					>

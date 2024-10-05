@@ -14,7 +14,6 @@ import Pagination from "@/components/Pagination";
 import { getFilteredCategoryProducts } from "@/constants/productsStore";
 import ButtonPrimary from "@/components/ButtonPrimary";
 
-const ITEMS_PER_PAGE = 10;
 const COOKIE_NAME = "currentWishListPage";
 
 function WishList() {
@@ -26,6 +25,7 @@ function WishList() {
 	// Hook calls at the top, ensuring they are consistent across renders
 	const { wishlistItems, loadWishlist, loading } = useWishlistStore();
 	const [currentPage, setCurrentPage] = useState(1);
+	const [itemsPerPage, setItemsPerPage] = useState(10); // Default to 10
 
 	// Load wishlist from cookie on mount
 	useEffect(() => {
@@ -45,11 +45,23 @@ function WishList() {
 		}
 	}, [currentPage, loading]);
 
-	// Calculate total pages based on the filtered products
-	const totalPages = Math.ceil(wishlistItems.length / ITEMS_PER_PAGE);
+	// Set items per page based on window size
+	useEffect(() => {
+		const updateItemsPerPage = () => {
+			setItemsPerPage(window.innerWidth < 768 ? 10 : 30); // 768px as a breakpoint
+		};
 
-	const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-	const endIndex = startIndex + ITEMS_PER_PAGE;
+		updateItemsPerPage(); // Set initial value
+		window.addEventListener("resize", updateItemsPerPage); // Update on resize
+
+		return () => window.removeEventListener("resize", updateItemsPerPage); // Cleanup
+	}, []);
+
+	// Calculate total pages based on the filtered products
+	const totalPages = Math.ceil(wishlistItems.length / itemsPerPage);
+
+	const startIndex = (currentPage - 1) * itemsPerPage;
+	const endIndex = startIndex + itemsPerPage;
 
 	const currentProducts = wishlistItems.slice(startIndex, endIndex);
 
@@ -60,7 +72,7 @@ function WishList() {
 
 	// Early return for loading state
 	if (loading) {
-		return <Loader />; // Ensure this is done before any hooks are conditionally called
+		return <Loader />;
 	}
 
 	return (

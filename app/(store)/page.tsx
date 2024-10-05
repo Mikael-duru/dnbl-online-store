@@ -196,14 +196,16 @@ export default function Home() {
 
 			{/* Why Choose Us */}
 			<section className="pt-[89px] px-[5%] 2xl:pl-[95px] 2xl:pr-[105px] pb-24 sm:pb-[164px] bg-white dark:bg-[#1E1E1E] relative">
-				<h2 className="home-heading text-black dark:text-white mb-10 sm:mb-[60px]">
+				<h2 className="home-heading text-black dark:text-white mb-10 sm:mb-[60px] relative z-10">
 					WHY CHOOSE US?
 				</h2>
 
-				<WhyChooseUs />
+				<div className="relative z-10">
+					<WhyChooseUs />
+				</div>
 
 				{/* Ribbons */}
-				<div className="absolute top-0 right-0 max-xl:hidden">
+				<div className="absolute top-0 right-0 max-sm:hidden">
 					<Image
 						src="/assets/yellow-rectangle.svg"
 						alt="Decorative yellow rectangle"
@@ -213,7 +215,7 @@ export default function Home() {
 						className="w-auto h-auto"
 					/>
 				</div>
-				<div className="absolute bottom-[210px] right-0 2xl:bottom-[150px] 2xl:right-[55px] max-xl:hidden">
+				<div className="absolute bottom-[210px] right-0 2xl:bottom-[150px] 2xl:right-[55px] max-sm:hidden">
 					<Image
 						src="/assets/yellow-bullet-group.svg"
 						alt="Decorative yellow bullets"
@@ -236,7 +238,10 @@ export default function Home() {
 					</h2>
 					<p className="text-[#767676] dark:text-gray-300 text-xs font-open-sans mb-6 sm:mb-[44.96px]">
 						At DNBL, your input matters. We welcome your feedback and
-						partnership requests to improve our platform and services.
+						partnership requests to improve our platform and services. You can
+						also contact us for bulk purchases or to become a sales middleman.
+						We value collaboration and are always open to new opportunities to
+						grow together.
 					</p>
 
 					<div className="w-[200px] mx-auto">

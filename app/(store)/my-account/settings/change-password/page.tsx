@@ -3,15 +3,15 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CircleArrowLeft, Eye, EyeOff } from "lucide-react";
-
-import LeftSideBar from "@/components/user-dashboard/LeftSideBar";
-import ButtonPrimary from "@/components/ButtonPrimary";
-import { auth } from "@/firebase/firebase";
 import {
 	EmailAuthProvider,
 	reauthenticateWithCredential,
 	updatePassword,
 } from "firebase/auth";
+
+import LeftSideBar from "@/components/user-dashboard/LeftSideBar";
+import ButtonPrimary from "@/components/ButtonPrimary";
+import { auth } from "@/firebase/firebase";
 import AlertCard from "@/components/AlertCard";
 
 function ChangePassword() {

@@ -17,7 +17,6 @@ const sortOptions = [
 	{ value: "newest", label: "Newest Arrival" },
 ];
 
-const ITEMS_PER_PAGE = 30;
 const COOKIE_NAME = "currentProductsPage";
 
 export default function ProductsPage() {
@@ -25,6 +24,7 @@ export default function ProductsPage() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [selectedCategory, setSelectedCategory] = useState<string>("all");
 	const [sortOption, setSortOption] = useState<string>("all");
+	const [itemsPerPage, setItemsPerPage] = useState(30); // Default to 30
 
 	useEffect(() => {
 		const savedPage = Cookies.get(COOKIE_NAME);
@@ -39,6 +39,17 @@ export default function ProductsPage() {
 			Cookies.set(COOKIE_NAME, currentPage.toString(), { expires: 7 });
 		}
 	}, [currentPage, isLoading]);
+
+	useEffect(() => {
+		const updateItemsPerPage = () => {
+			setItemsPerPage(window.innerWidth < 768 ? 10 : 30); // 768px as a breakpoint
+		};
+
+		updateItemsPerPage(); // Set initial value
+		window.addEventListener("resize", updateItemsPerPage); // Update on resize
+
+		return () => window.removeEventListener("resize", updateItemsPerPage); // Cleanup
+	}, []);
 
 	// Dynamically filter products based on the selected category
 	const filteredProducts = products.filter((product) => {
@@ -73,10 +84,10 @@ export default function ProductsPage() {
 	}, [filteredProducts, sortOption]);
 
 	// Calculate total pages based on the filtered products
-	const totalPages = Math.ceil(sortedProducts.length / ITEMS_PER_PAGE);
+	const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
 
-	const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-	const endIndex = startIndex + ITEMS_PER_PAGE;
+	const startIndex = (currentPage - 1) * itemsPerPage;
+	const endIndex = startIndex + itemsPerPage;
 
 	const currentProducts = sortedProducts.slice(startIndex, endIndex);
 
@@ -132,7 +143,7 @@ export default function ProductsPage() {
 					</div>
 				</div>
 
-				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+				<div className="flex justify-center items-center flex-wrap gap-4">
 					{currentProducts?.length > 0 ? (
 						currentProducts.map((product: ProductType) => (
 							<ProductCard key={product._id} product={product} />
