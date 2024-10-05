@@ -81,9 +81,7 @@ const ProductInfo = ({ productInfo }: { productInfo: ProductType }) => {
 							<div
 								key={index}
 								className={`w-[40px] sm:w-[45px] h-[40px] sm:h-[45px] p-2 rounded-lg cursor-pointer hover:border-black ${
-									selectedColor === color
-										? "border-2 border-black dark:border-white"
-										: "border-0"
+									selectedColor === color ? "border-2 border-black" : "border"
 								}`}
 								style={{ backgroundColor: color }}
 								onClick={() => setSelectedColor(color)}
