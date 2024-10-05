@@ -73,7 +73,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
 	};
 
 	return (
-		<div className="bg-white dark:bg-[#4E4E4E] border-[1.47px] rounded-[5.87px] border-product-card-border px-[9.46px] py-[11.74px] max-sm:w-[160px] overflow-hidden hover:scale-[.96] hover:shadow-md transition-all ease-in cursor-pointer relative">
+		<div className="bg-white dark:bg-[#4E4E4E] border-[1.47px] rounded-[5.87px] border-product-card-border px-[9.46px] py-[11.74px] w-[250px] overflow-hidden hover:scale-[.96] hover:shadow-md transition-all ease-in cursor-pointer relative">
 			<div className="absolute top-5 right-5 p-1 rounded-full bg-white dark:bg-[#3E3E3E] flex items-center justify-center h-[20px] w-[20px]">
 				<HeartFavorite product={product} />
 			</div>
@@ -86,9 +86,9 @@ const ProductCard = ({ product }: { product: ProductType }) => {
 					<Image
 						src={product?.media[0]}
 						alt={product?.productName}
-						width={100}
-						height={100}
-						className="w-[160px] h-[150px] object-cover rounded-lg cursor-pointer"
+						width={400}
+						height={400}
+						className="w-[250px] h-[200px] object-cover rounded-lg cursor-pointer"
 					/>
 				</div>
 				<div className="pt-[11.74px] px-1">

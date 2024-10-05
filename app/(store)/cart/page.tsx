@@ -41,20 +41,22 @@ const Cart = () => {
 	const totalRounded = parseFloat(total.toFixed(2));
 
 	// Check authentication state
-	useEffect(() => {
-		const unSub = onAuthStateChanged(auth, (user) => {
-			if (user) {
-				getUserInfo(user?.uid);
-			}
-		});
-		return () => {
-			unSub();
-		};
-	}, [getUserInfo]);
+	// useEffect(() => {
+	// 	const unSub = onAuthStateChanged(auth, (user) => {
+	// 		if (user) {
+	// 			getUserInfo(user?.uid);
+	// 		}
+	// 	});
+	// 	return () => {
+	// 		unSub();
+	// 	};
+	// }, [getUserInfo]);
+
+	const user = auth.currentUser;
 
 	const handleCheckout = async () => {
 		// Check if user is signed in
-		if (!currentUser) {
+		if (!user) {
 			// Show alert or toast notification
 			toast.error("You need to be signed in to proceed to checkout.");
 			return;

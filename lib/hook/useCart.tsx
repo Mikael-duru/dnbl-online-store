@@ -76,7 +76,7 @@ const useCart = create(
 						const filteredItems = newCartItems?.filter(
 							(cartItem) => cartItem.item._id !== item._id
 						);
-						set({ cartItems: [updatedItem, ...filteredItems] });
+						set({ cartItems: [updatedItem!, ...filteredItems] });
 						toast.success(`Item ${updateMessage}`, { icon: "🛒" });
 					} else {
 						toast("Item already in cart", { icon: "🛒" });

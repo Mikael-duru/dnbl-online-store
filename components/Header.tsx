@@ -157,10 +157,10 @@ function Header() {
 			<Link href={href}>
 				<Image
 					src={iconSrc}
-					width={32}
-					height={32}
+					width={48}
+					height={48}
 					alt=""
-					className="dark:invert"
+					className="dark:invert w-8 h-8"
 				/>
 				{notificationCount !== null && (
 					<span className="w-[16.5px] h-[16.5px] rounded-full p-[4.4px] flex items-center justify-center bg-[#C51818] font-inter text-[11px] text-white absolute top-0 right-0">
@@ -181,8 +181,8 @@ function Header() {
 				>
 					<Image
 						src="/assets/logo-black.svg"
-						width={138}
-						height={60}
+						width={200}
+						height={199}
 						alt="DNBL logo"
 						className="w-[138px] h-[60px] object-contain dark:invert"
 					/>
