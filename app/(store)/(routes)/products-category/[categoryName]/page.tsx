@@ -126,7 +126,7 @@ function ProductCategory({ params }: any) {
 					</div>
 				</div>
 
-				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-4">
+				<div className="flex max-sm:justify-center items-center flex-wrap gap-4 mt-4 xl:gap-6 sm:ml-[5%] xl:ml-0 2xl:ml-[5%]">
 					{currentProducts?.length > 0 ? (
 						currentProducts?.map((product: ProductType) => (
 							<ProductCard key={product._id} product={product} />

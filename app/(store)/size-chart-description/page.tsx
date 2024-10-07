@@ -35,7 +35,7 @@ const SizeChartDescription: React.FC = () => {
 							Men&apos;s Trouser Size Chart
 						</h2>
 						<Image
-							src="/assets/men-trousers-sizes.png"
+							src="/assets/men-trousers-size-chart.jpeg"
 							width={374}
 							height={665}
 							alt="Men's Trouser Size Chart"
@@ -47,7 +47,7 @@ const SizeChartDescription: React.FC = () => {
 							Women&apos;s Size Chart
 						</h2>
 						<Image
-							src="/assets/women-size-chart.png"
+							src="/assets/women-size-chart.jpeg"
 							width={374}
 							height={665}
 							alt="Women's Size Chart"
@@ -59,7 +59,7 @@ const SizeChartDescription: React.FC = () => {
 							Men&apos;s Top Size Chart
 						</h2>
 						<Image
-							src="/assets/men-top-sizes.png"
+							src="/assets/men-shirt-size-chart.jpeg"
 							width={374}
 							height={665}
 							alt="Men's Top Size Chart"
@@ -107,7 +107,7 @@ const SizeChartDescription: React.FC = () => {
 						<li>For a more tailored look, stick to your exact measurements.</li>
 						<li>
 							Different styles may have different fits, so always refer to the
-							product’s fit guide.
+							product&apso;s fit guide.
 						</li>
 					</ul>
 				</div>

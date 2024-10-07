@@ -45,9 +45,9 @@ function AlertCard({ alert }: any) {
 				</span>
 
 				<div className="flex-1">
-					{/* <strong className="block font-medium text-gray-900">
-						Registration Failed!
-					</strong> */}
+					<strong className="block font-medium text-gray-900">
+						Email submitted successfully!
+					</strong>
 
 					<p className="mt-1 text-sm text-gray-700">{alert}</p>
 				</div>

@@ -9,6 +9,7 @@ import Slider from "@/components/Slider";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import WhyChooseUs from "@/components/WhyChooseUs";
 import { getFilteredCategoryProducts } from "@/constants/productsStore";
+import Link from "next/link";
 
 export default function Home() {
 	const router = useRouter();
@@ -104,12 +105,13 @@ export default function Home() {
 								We love what we do at DNBL
 							</h3>
 							<p className="text-[#1E1E1E] dark:text-gray-200 text-justify font-open-sans text-base lg:text-lg xl:text-2xl xl:leading-[40px] font-normal tracking-[0.02rem] pb-8 lg:pb-[22px] 2xl:w-[716px]">
-								D&apos;Nobles Fashion House envisions a world where Nigerian
-								elegance and heritage are celebrated globally through premium
-								fashion. We aim to bridge cultures with exquisite products
-								embodying Nigeria&apos;s vibrant traditions and sophisticated
-								craftsmanship. Our goal is to inspire pride and connection among
-								the Nigerian diaspora and fashion enthusiasts worldwide.
+								D&apos;Nobles Limited Fashion House envisions a world where
+								Nigerian elegance and heritage are celebrated globally through
+								premium fashion. We aim to bridge cultures with exquisite
+								products embodying Nigeria&apos;s vibrant traditions and
+								sophisticated craftsmanship. Our goal is to inspire pride and
+								connection among the Nigerian diaspora and fashion enthusiasts
+								worldwide.
 							</p>
 
 							<div className="w-[263px] mx-auto md:mx-0">
@@ -163,13 +165,15 @@ export default function Home() {
 					<Slider prods={trendyProducts} />
 				</div>
 
-				<div className="mt-10 w-[150px] mx-auto">
-					<ButtonSecondary
-						type="button"
-						label="View All"
-						onClick={() => router.push("/products-category/trendy")}
-					/>
-				</div>
+				{trendyProducts.length > 6 && (
+					<div className="mt-10 w-[150px] mx-auto">
+						<ButtonSecondary
+							type="button"
+							label="View All"
+							onClick={() => router.push("/products-category/trendy")}
+						/>
+					</div>
+				)}
 			</section>
 
 			{/* Featured Products */}
@@ -228,25 +232,40 @@ export default function Home() {
 			</section>
 
 			{/* Get in Touch */}
-			<section className="px-[5%] pt-[54.8px] pb-[88px] text-center items-center bg-[#FFF6E9] dark:bg-[#3A3A3A]">
+			<section className="px-[5%] pt-[54.8px] pb-[88px] items-center bg-[#FFF6E9] dark:bg-[#3A3A3A]">
 				<div className="md:w-[719.72px] mx-auto">
-					<p className="font-extrabold text-base xs:text-xl text-gold-text font-open-sans">
+					<p className="font-extrabold text-base xs:text-xl text-gold-text font-open-sans text-center">
 						GET IN TOUCH
 					</p>
-					<h2 className="text-2xl xs:text-3xl font-bold font-open-sans text-[#333] dark:text-white my-5 xs:mt-6 xs:mb-[27px]">
+					<h2 className="text-2xl xs:text-3xl text-center font-bold font-open-sans text-[#333] dark:text-white my-5 xs:mt-6 xs:mb-[27px]">
 						Your Feedback Matters: Embrace a Journey of Collaboration with Us!
 					</h2>
-					<p className="text-[#767676] dark:text-gray-300 text-sm font-open-sans mb-6 sm:mb-[44.96px]">
-						At DNBL, your input matters. We welcome your feedback and
-						partnership requests to improve our platform and services.{" "}
-						<span className="text-gold-text">
-							{" "}
-							You can also contact us for bulk purchases or to become a sales
-							middleman.
-						</span>{" "}
-						We value collaboration and are always open to new opportunities to
-						grow together.
-					</p>
+					<div className="max-w-[580px] mx-auto px-[5%]">
+						<p className="pb-2 text-[#767676] dark:text-gray-300 font-semibold">
+							At DNBL:
+						</p>
+						<ul className="list-disc flex flex-col gap-2 justify-center text-[#767676] dark:text-gray-300 text-xs xl:text-sm leading-[20px] font-open-sans mb-6 sm:mb-[44.96px]">
+							<li>
+								We welcome feedbacks and partnership requests to improve our
+								platform and services.
+							</li>
+							<li>
+								You can contact us for bulk purchases or to become a sales
+								middleman.
+							</li>
+							<li>
+								You can also place orders for your Bespoke/Custom made wears, by
+								reaching out to the customer support via our&nbsp;
+								<Link
+									href="https://wa.link/gfswrn"
+									className="font-bold text-brown-gold underline"
+								>
+									WhatsApp
+								</Link>
+								&nbsp;platform.
+							</li>
+						</ul>
+					</div>
 
 					<div className="w-[200px] mx-auto">
 						<ButtonPrimary

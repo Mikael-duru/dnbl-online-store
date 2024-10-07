@@ -73,9 +73,11 @@ const ProductCard = ({ product }: { product: ProductType }) => {
 	};
 
 	return (
-		<div className="bg-white dark:bg-[#4E4E4E] border-[1.47px] rounded-[5.87px] border-product-card-border px-[9.46px] py-[11.74px] w-[250px] overflow-hidden hover:scale-[.96] hover:shadow-md transition-all ease-in cursor-pointer relative">
-			<div className="absolute top-5 right-5 p-1 rounded-full bg-white dark:bg-[#3E3E3E] flex items-center justify-center h-[20px] w-[20px]">
-				<HeartFavorite product={product} />
+		<div className="bg-white dark:bg-[#4E4E4E] border-[1.47px] rounded-[5.87px] border-product-card-border px-[9.46px] py-[11.74px] max-sm:w-[180px] w-[200px] xl:w-[250px] overflow-hidden hover:scale-[.96] hover:shadow-md transition-all ease-in cursor-pointer relative">
+			<div className="absolute top-5 right-5 p-1 rounded-full bg-white dark:bg-[#3E3E3E]  h-[28px] w-[28px]">
+				<div className="w-full h-full flex items-center justify-center">
+					<HeartFavorite product={product} />
+				</div>
 			</div>
 			<Link
 				href={`/product/${productUrl}?id=${product?._id}`}
@@ -86,20 +88,20 @@ const ProductCard = ({ product }: { product: ProductType }) => {
 					<Image
 						src={product?.media[0]}
 						alt={product?.productName}
-						width={400}
-						height={400}
-						className="w-[250px] h-[200px] object-cover rounded-lg cursor-pointer"
+						width={500}
+						height={500}
+						className="max-sm:h-[160px] w-[200px] xl:w-[250px] h-[200px] object-cover rounded-lg cursor-pointer"
 					/>
 				</div>
 				<div className="pt-[11.74px] px-1">
-					<h3 className="text-[11.74px] leading-[13.91px] font-medium text-black dark:text-white font-rubik mb-[5.87px]">
+					<h3 className="text-[11.74px] leading-[13.91px] lg:text-sm font-medium text-black dark:text-white font-rubik mb-[5.87px]">
 						{product?.productName}
 					</h3>
 					<div>
 						{product?.newPrice ? (
-							<p className="text-sm font-bold font-open-sans text-figure-text dark:text-white pb-2 flex items-baseline gap-[5.47px]">
+							<p className="text-sm lg:text-base font-bold font-open-sans text-figure-text dark:text-white pb-2 flex items-baseline gap-[5.47px]">
 								₦{product.newPrice.toLocaleString()}
-								<span className="line-through font-normal text-xs leading-[15.98px] text-old-price-text">
+								<span className="line-through font-normal text-xs lg:text-sm text-old-price-text">
 									₦{product.oldPrice.toLocaleString()}
 								</span>
 							</p>

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { CircleArrowLeft } from "lucide-react";
+import { CircleArrowLeft, UserRoundCheck } from "lucide-react";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import { Star } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -10,10 +10,14 @@ import Image from "next/image";
 
 import { getProductById } from "@/constants/productsStore";
 import Loader from "@/components/Loader";
+import { store } from "@/lib/store";
+import { auth } from "@/firebase/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Review {
 	name: string;
-	userImageUrl: string;
+	ImageUrl: string;
 	date: string;
 	rating: number;
 	reviewTitle: string;
@@ -21,6 +25,7 @@ interface Review {
 }
 
 const ReviewsPage = () => {
+	const { currentUser, getUserInfo } = store();
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const productId = searchParams.get("id"); // Access the product._id
@@ -41,6 +46,16 @@ const ReviewsPage = () => {
 			calculateAverageRating(parsedReviews);
 			calculateRatingDistribution(parsedReviews);
 		}
+
+		const unSub = onAuthStateChanged(auth, (user) => {
+			if (user) {
+				getUserInfo(user?.uid);
+			}
+			// setIsAuthenticated(!!user); // Set authentication status
+		});
+		return () => {
+			unSub();
+		};
 	}, [productId]);
 
 	// Calculate the average rating
@@ -96,8 +111,8 @@ const ReviewsPage = () => {
 					<div>
 						<Image
 							src={product?.media[0]}
-							width={440}
-							height={281.48}
+							width={500}
+							height={500}
 							alt={product?.productName}
 							className="object-cover w-[440px] h-[350px]"
 						/>
@@ -170,15 +185,20 @@ const ReviewsPage = () => {
 				{reviews.map((review, index) => (
 					<div key={index} className="mb-8">
 						<div className="mb-[22px] flex sm:items-center gap-4">
-							<div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
-								<Image
-									src={review?.userImageUrl}
-									width={48}
-									height={48}
-									alt="User Profile"
-									className="w-full h-full object-cover"
-								/>
-							</div>
+							{currentUser?.photoURL || review?.ImageUrl ? (
+								<Avatar className="w-12 h-12 shrink-0">
+									<AvatarImage
+										src={currentUser?.photoURL || review?.ImageUrl}
+										alt={"User profile picture"}
+									/>
+								</Avatar>
+							) : (
+								<Avatar className="w-12 h-12 shrink-0">
+									<AvatarFallback className="text-2xl font-libre-franklin tracking-wide">
+										<UserRoundCheck size={24} />
+									</AvatarFallback>
+								</Avatar>
+							)}
 							<div className="flex-1 flex max-sm:flex-col gap-3 justify-between items-start flex-wrap">
 								<div>
 									<h2 className="font-open-sans font-semibold text-xl leading-[27.24px] text-figure-text mb-[2px] sm:mb-1 dark:text-white">

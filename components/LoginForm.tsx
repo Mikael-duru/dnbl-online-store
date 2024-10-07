@@ -1,28 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Mail } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/firebase/firebase";
-// import { doc, getDoc, setDoc } from "firebase/firestore";
+import { auth, db } from "@/firebase/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 import Button from "./Button";
-// import AlertCard from "./AlertCard";
+import AlertCard from "./AlertCard";
 import SignInWithGoogle from "./SignInWithGoogle";
 import SignInWithFacebook from "./SignInWithFacebook";
 
 export default function LoginForm() {
+	const [userId, setUserId] = useState("");
+	const [isEmailVerified, setIsEmailVerified] = useState<string>("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
 	const [errors, setErrors] = useState({ email: "", password: "" });
 	const [loading, setLoading] = useState(false);
-	// const [errMsg, setErrMsg] = useState("");
+	const [errMsg, setErrMsg] = useState("");
 	const router = useRouter();
+
+	useEffect(() => {
+		// Retrieve the stored user data from session storage
+		const storedUserId = sessionStorage.getItem("registrationData");
+		if (storedUserId) {
+			setUserId(storedUserId);
+		}
+	}, [router]);
 
 	const validateEmail = (email: string) => {
 		return /\S+@\S+\.\S+/.test(email);
@@ -79,56 +89,20 @@ export default function LoginForm() {
 
 				await signInWithEmailAndPassword(auth, email, password);
 
-				// const userCredential = await signInWithEmailAndPassword(
-				// 	auth,
-				// 	email,
-				// 	password
-				// );
+				const userDoc = await getDoc(doc(db, "users", userId));
+				if (userDoc.exists()) {
+					const userData = userDoc.data();
+					setIsEmailVerified(userData.isEmailVerified);
+				}
 
-				// const user = userCredential.user;
-
-				// if (user.emailVerified) {
-				// 	// Retrieve user data from local storage
-				// 	const registrationData = localStorage.getItem("registrationData");
-				// 	const {
-				// 		firstName = "",
-				// 		lastName = "",
-				// 		email = "",
-				// 		id = "",
-				// 		photoURL = "",
-				// 		address = "",
-				// 		city = "",
-				// 		country = "",
-				// 		phoneNumber = "",
-				// 		displayName = " ",
-				// 	} = registrationData ? JSON.parse(registrationData) : {};
-
-				// 	// check if user data exists in firestore
-				// 	const userDoc = await getDoc(doc(db, "users", user.uid));
-				// 	if (!userDoc.exists()) {
-				// 		// Save user data to firestore after email verification
-				// 		await setDoc(doc(db, "users", user.uid), {
-				// 			firstName,
-				// 			lastName,
-				// 			email,
-				// 			id: user.uid, // Save user ID
-				// 			photoURL: "",
-				// 			address: "",
-				// 			city: "",
-				// 			country: "",
-				// 			phoneNumber: "",
-				// 			displayName: firstName + " " + lastName,
-				// 		});
-				// 	}
-
-				// 	// Clear registration data from local storage
-				// 	localStorage.removeItem("registrationData");
-
-				router.push("/");
-				toast.success("User logged in successfully");
-				// } else {
-				// 	setErrMsg("Please verify your email before logging in.");
-				// }
+				if (isEmailVerified) {
+					console.log(isEmailVerified);
+					router.push("/");
+					toast.success("User logged in successfully");
+					sessionStorage.removeItem("user.uid");
+				} else {
+					setErrMsg("Please verify your email before logging in.");
+				}
 			} catch (error: any) {
 				let errorMessage;
 				switch (error.code) {
@@ -239,7 +213,7 @@ export default function LoginForm() {
 					</Link>
 				</div>
 
-				{/* {errMsg && <AlertCard alert={errMsg} />} */}
+				{errMsg && <AlertCard alert={errMsg} />}
 
 				<div className="pt-4">
 					{/* Submit form */}

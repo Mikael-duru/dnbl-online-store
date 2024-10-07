@@ -70,8 +70,8 @@ function Footer() {
 					</div>
 				</div>
 
-				<div className="flex flex-col items-start gap-8 md:flex-row xl:gap-[87px]">
-					<div className="md:w-[140px]">
+				<div className="flex flex-col items-start gap-8 md:gap-10 md:flex-row lg:gap-24">
+					<div className="md:w-[230px] shrink-0">
 						<h2 className="pb-3 text-gradient text-lg font-semibold font-open-sans uppercase">
 							Useful Links
 						</h2>
@@ -90,10 +90,21 @@ function Footer() {
 									</Link>
 								</li>
 							))}
+							<li
+								className={`pt-1 font-roboto text-base font-normal capitalize ${
+									pathname === "/size-chart-description"
+										? "text-[#B47B2B]"
+										: "text-[#B6B6B6]"
+								}`}
+							>
+								<Link href="/size-chart-description">
+									How to take measurements
+								</Link>
+							</li>
 						</ul>
 					</div>
 
-					<div className="lg:pr-8 xl:pr-0">
+					<div className="lg:pr-8 xl:pr-0 shrink-0">
 						<h2 className="pb-3 text-gradient text-lg font-semibold font-open-sans uppercase">
 							About DNBL
 						</h2>

@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
 	CircleUserRound,
@@ -10,23 +9,8 @@ import {
 	// Heart,
 	// BellRing,
 	Settings,
-	LogOut,
 } from "lucide-react";
 import { CiMenuKebab } from "react-icons/ci";
-
-import { signOut } from "firebase/auth";
-import { auth } from "@/firebase/firebase";
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import LogOutModal from "../LogOutModal";
-import toast from "react-hot-toast";
 
 const userNavigation = [
 	{
@@ -67,19 +51,8 @@ const userNavigation = [
 ];
 
 function UserDashboard() {
-	const router = useRouter();
 	const pathname = usePathname();
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-	const handleLogout = async () => {
-		try {
-			await signOut(auth);
-			toast.success("You have been signed out.");
-			router.push("/");
-		} catch (error) {
-			console.error("Logout error:", error);
-		}
-	};
 
 	// Helper function for navigation items
 	const NavItem = ({ icon, title, link }: any) => (
@@ -128,34 +101,6 @@ function UserDashboard() {
 							.map((item) => (
 								<NavItem key={item.title} {...item} />
 							))}
-
-						<AlertDialog>
-							<AlertDialogTrigger asChild>
-								<div className="font-open-sans font-normal text-lg leading-[28.8px] cursor-pointer p-[10px] text-red-500 flex items-center gap-6">
-									<LogOut size={24} />
-									<span>Log out</span>
-								</div>
-							</AlertDialogTrigger>
-							<AlertDialogContent>
-								<AlertDialogHeader>
-									<LogOutModal />
-								</AlertDialogHeader>
-								<AlertDialogFooter>
-									<div className="w-[150px]">
-										<AlertDialogCancel className="w-full text-base leading-[21.79px] font-open-sans font-semibold p-[10px] border border-[#F23E3E] rounded-lg focus:ring-1 focus:ring-[#F23E3E] outline-none">
-											Cancel
-										</AlertDialogCancel>
-									</div>
-									<div className="w-[150px]">
-										<button onClick={handleLogout} className="w-full">
-											<AlertDialogAction className="w-full text-base leading-[21.79px] font-open-sans font-semibold text-white p-[10px] border border-[#F23E3E] bg-[#F23E3E] outline-none rounded-lg hover:scale-95 duration-300 focus:ring-1 focus:ring-[#F23E3E]">
-												Log Out
-											</AlertDialogAction>
-										</button>
-									</div>
-								</AlertDialogFooter>
-							</AlertDialogContent>
-						</AlertDialog>
 					</ul>
 				</nav>
 
@@ -171,34 +116,6 @@ function UserDashboard() {
 							.map((item) => (
 								<NavItem key={item.title} {...item} />
 							))}
-
-						<AlertDialog>
-							<AlertDialogTrigger asChild>
-								<div className="font-open-sans font-normal text-lg leading-[28.8px] cursor-pointer p-[10px] text-red-500 flex items-center gap-6">
-									<LogOut size={24} />
-									<span>Log out</span>
-								</div>
-							</AlertDialogTrigger>
-							<AlertDialogContent>
-								<AlertDialogHeader>
-									<LogOutModal />
-								</AlertDialogHeader>
-								<AlertDialogFooter>
-									<div className="w-[150px]">
-										<AlertDialogCancel className="w-full text-base leading-[21.79px] font-open-sans font-semibold text-lighter-black p-[10px] border border-[#F23E3E] rounded-lg focus:ring-1 focus:ring-[#F23E3E] outline-none">
-											Cancel
-										</AlertDialogCancel>
-									</div>
-									<div className="w-[150px]">
-										<button onClick={handleLogout} className="w-full">
-											<AlertDialogAction className="w-full text-base leading-[21.79px] font-open-sans font-semibold text-white p-[10px] border border-[#F23E3E] bg-[#F23E3E] outline-none rounded-lg hover:scale-95 duration-300 focus:ring-1 focus:ring-[#F23E3E]">
-												Log Out
-											</AlertDialogAction>
-										</button>
-									</div>
-								</AlertDialogFooter>
-							</AlertDialogContent>
-						</AlertDialog>
 					</ul>
 				</nav>
 			</div>

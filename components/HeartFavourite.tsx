@@ -26,19 +26,10 @@ const HeartFavorite = ({ product }: HeartFavoriteProps) => {
 	}, [wishlistItems, product._id]);
 
 	// Check authentication state
-	useEffect(() => {
-		const unSub = onAuthStateChanged(auth, (user) => {
-			if (user) {
-				getUserInfo(user?.uid);
-			}
-		});
-		return () => {
-			unSub();
-		};
-	}, [getUserInfo]);
+	const user = auth.currentUser;
 
 	const handleLike = () => {
-		if (!currentUser) {
+		if (!user) {
 			// Redirect to sign-in page if the user is not authenticated
 			router.push("/sign-in");
 			return;
@@ -57,7 +48,7 @@ const HeartFavorite = ({ product }: HeartFavoriteProps) => {
 
 	return (
 		<button onClick={handleLike}>
-			<Heart size={16} fill={isLiked ? "red" : "white"} />
+			<Heart size={22} fill={isLiked ? "red" : "white"} />
 		</button>
 	);
 };

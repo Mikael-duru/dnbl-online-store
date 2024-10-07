@@ -83,7 +83,9 @@ const CheckOut: React.FC = () => {
 
 			setOrderMessage(message);
 
-			const whatsappUrl = `https://wa.me/2349070908860?text=${encodeURIComponent(
+			const waNumber = process.env.WHATSAPP_NUMBER;
+
+			const whatsappUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(
 				message
 			)}`;
 

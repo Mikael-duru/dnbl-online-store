@@ -6,7 +6,7 @@ function AboutUs() {
 		{
 			title: "Our Story",
 			content: `
-        D'Nobles Fashion House envisions a world where Nigerian elegance and heritage are celebrated globally through premium fashion. 
+        D'Nobles Limited Fashion House envisions a world where Nigerian elegance and heritage are celebrated globally through premium fashion. 
         We aim to bridge cultures with exquisite products embodying Nigeria's vibrant traditions and sophisticated craftsmanship. 
         Our goal is to inspire pride and connection among the Nigerian diaspora and fashion enthusiasts worldwide, making our brand synonymous with quality, community, and cultural excellence.
       `,

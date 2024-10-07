@@ -1,19 +1,24 @@
 "use client";
 
 import { useState } from "react";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Mail } from "lucide-react";
-// import { sendPasswordResetEmail } from "firebase/auth";
+import { sendPasswordResetEmail } from "firebase/auth";
 
 import ButtonPrimary from "@/components/ButtonPrimary";
-// import { auth } from "@/firebase/firebase";
+import { auth } from "@/firebase/firebase";
 // import toast from "react-hot-toast";
+import AlertCard from "@/components/AlertCard";
 
 function ForgetPassword() {
 	const [email, setEmail] = useState("");
 	const [errors, setErrors] = useState({ email: "" });
-	// const router = useRouter();
+	const [errMsg, setErrMsg] = useState("");
+	const [successMsg, setSuccessMsg] = useState("");
+	const [otp, setOtp] = useState("");
+	const [firstName, setFirstName] = useState("");
+	const router = useRouter();
 
 	const validateEmail = (email: string) => {
 		return /\S+@\S+\.\S+/.test(email);
@@ -46,17 +51,16 @@ function ForgetPassword() {
 		setErrors(newErrors);
 
 		if (!newErrors.email) {
-			// sendPasswordResetEmail(auth, email)
-			// 	.then(() => {
-			// 		toast.success("Check your email");
-			// 		// router.push("")
-			// 		console.log("Code sent");
-			// 	})
-			// 	.catch((error) => {
-			// 		const errCode = error.code;
-			// 		console.log(errCode);
-			// 		// Submit form
-			// 	});
+			sendPasswordResetEmail(auth, email)
+				.then(() => {
+					setSuccessMsg("Check your email for reset password link");
+					console.log("Code sent");
+				})
+				.catch((error) => {
+					const errCode = error.code;
+					console.log(errCode);
+					setErrMsg("Something went wrong!, Try again.");
+				});
 		}
 	};
 
@@ -87,11 +91,11 @@ function ForgetPassword() {
 
 					{/* Headline */}
 					<p className="headline">
-						Provide your email to receive a reset code.
+						Provide your email to receive password reset instruction.
 					</p>
 
 					<form onSubmit={handleSubmit}>
-						<div className="mb-6">
+						<div className="pb-3">
 							{/* Email field */}
 							<label htmlFor="email" className="label-heading">
 								Email Address
@@ -118,7 +122,15 @@ function ForgetPassword() {
 							)}
 						</div>
 
-						<ButtonPrimary type="button" label="Send Code" />
+						{errMsg && (
+							<p className="text-error dark:text-red-500 text-sm">{errMsg}</p>
+						)}
+
+						{successMsg && <AlertCard alert={successMsg} />}
+
+						<div className="pt-3">
+							<ButtonPrimary type="button" label="Send Reset Link" />
+						</div>
 
 						<div className="flex items-center justify-center mt-10 lg:hidden">
 							<Image

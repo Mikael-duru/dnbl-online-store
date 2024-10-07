@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import Modal from "./Modal";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 const NewsletterForm = () => {
 	const [email, setEmail] = useState("");
-	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [error, setError] = useState("");
 
 	const validateEmail = (email: any) => {
@@ -37,7 +36,9 @@ const NewsletterForm = () => {
 
 			if (response.ok) {
 				setEmail("");
-				setIsModalOpen(true);
+				toast.success(
+					"Thank you for subscribing!, \n Prepare for exclusive deals and style tips."
+				);
 				setError(""); // Clear any previous error messages
 			} else {
 				const errorText = await response.text(); // Get error message as text
@@ -91,15 +92,6 @@ const NewsletterForm = () => {
 			{error && (
 				<p className="text-red-500 text-sm mt-1">{error}</p> // Display error message
 			)}
-
-			<Modal
-				isOpen={isModalOpen}
-				onClose={() => setIsModalOpen(false)}
-				src="./assets/user-tick.svg"
-				heading="Thank you for subscribing!"
-				paragraphText="Subscriber status unlocked! Prepare for exclusive deals and style tips."
-				buttonLabel="Continue"
-			/>
 		</>
 	);
 };

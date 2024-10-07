@@ -10,6 +10,7 @@ import { products } from "@/store/products";
 import Pagination from "@/components/Pagination";
 import CustomDropdown from "@/components/CustomDropdown";
 import { categories } from "@/constants/productsStore";
+import Link from "next/link";
 
 const sortOptions = [
 	{ value: "low-to-high", label: "Price: Low to High" },
@@ -143,7 +144,20 @@ export default function ProductsPage() {
 					</div>
 				</div>
 
-				<div className="flex justify-center items-center flex-wrap gap-4">
+				{/* Special Orders */}
+				<p className="flex justify-center items-center pb-5">
+					For your Bespoke/Custom made wears, please contact customer support
+					via our&nbsp;
+					<Link
+						href="https://wa.link/gfswrn"
+						className="font-bold text-brown-gold underline"
+					>
+						WhatsApp
+					</Link>
+					&nbsp;platform
+				</p>
+
+				<div className="flex max-sm:justify-center items-center flex-wrap gap-4 mt-4 xl:gap-6 sm:ml-[5%] xl:ml-0 2xl:ml-[5%]">
 					{currentProducts?.length > 0 ? (
 						currentProducts.map((product: ProductType) => (
 							<ProductCard key={product._id} product={product} />

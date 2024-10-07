@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import Button from "./Button";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/firebase/firebase";
+import { generateOTP } from "@/utils/otp";
 // import AlertCard from "./AlertCard";
 
 export default function RegisterForm() {
@@ -123,61 +124,64 @@ export default function RegisterForm() {
 					}
 				}
 
-				const userCredential = await createUserWithEmailAndPassword(
+				const { user } = await createUserWithEmailAndPassword(
 					auth,
 					email,
 					password
 				);
 
-				const user = userCredential.user;
-
-				// await sendEmailVerification(user);
+				// Generate OTP and expiration
+				const { otp, otpExpiredAt } = generateOTP();
 
 				// Save user data to Firestore
-				await setDoc(doc(db, "users", user.uid), {
+				const userData = {
 					firstName,
 					lastName,
 					email,
-					id: user.uid, // Save user ID
+					id: user.uid,
 					photoURL: "",
 					address: "",
 					city: "",
 					country: "",
 					phoneNumber: "",
-					displayName: firstName + " " + lastName,
-				});
+					displayName: `${firstName} ${lastName}`,
+					otpCode: otp,
+					otpExpiredAt: otpExpiredAt,
+					isEmailVerified: false,
+					createdAt: new Date(),
+				};
+
+				await setDoc(doc(db, "users", user.uid), userData);
 
 				// store the email in session storage
-				sessionStorage.setItem("registrationData", email);
+				sessionStorage.setItem("registrationData", user.uid);
+				console.log(user.uid);
 
 				// Temporary store user data in local storage
 				localStorage.setItem(
 					"registrationData",
 					JSON.stringify({
-						firstName,
-						lastName,
-						email,
-						id: user.uid, // Save user ID
-						photoURL: "",
-						address: "",
-						city: "",
-						country: "",
-						phoneNumber: "",
-						displayName: firstName + " " + lastName,
+						userData,
 					})
 				);
 
-				// setErrMsg(
-				// 	"User registered Successfully!. Please check your email for verification"
-				// );
-				toast.success("User registered Successfully!. Sign-in to your account");
+				const response = await fetch("/api/send", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ firstName, email, otp }), // Send the required data
+				});
+
+				if (response.status === 200) {
+					toast.success("User registered successfully! Verify your email.");
+				}
+				console.log("Registration successful, OTP sent via email");
 
 				// Clear form fields
 				setFirstName("");
 				setLastName("");
 				setEmail("");
 				setPassword("");
-				router.push("/sign-in");
+				router.push("/auth/email-verification");
 			} catch (error: any) {
 				let errorMessage;
 				switch (error.code) {

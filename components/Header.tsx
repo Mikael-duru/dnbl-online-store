@@ -27,20 +27,21 @@ import ButtonPrimary from "./ButtonPrimary";
 import ButtonSecondary from "./ButtonSecondary";
 import useCart from "@/lib/hook/useCart";
 import { auth, db } from "@/firebase/firebase";
-import { getDoc, doc } from "firebase/firestore";
+import { getDoc, doc, setDoc } from "firebase/firestore";
 import toast from "react-hot-toast";
 
 const primaryNavigation = [
 	{ title: "Home", link: "/" },
 	{ title: "About Us", link: "/about-us" },
 	{ title: "Products", link: "/product" },
-	{ title: "Favourites", link: "/wishlists" },
+	// { title: "Favourites", link: "/wishlists" },
 ];
 
 function Header() {
 	const [user, setUser] = useState<User | null>(null);
 	const [userName, setUserName] = useState<string | null>(null);
 	const [photoURL, setPhotoURL] = useState<string>("");
+	const [isEmailVerified, setIsEmailVerified] = useState<string>("");
 	const [email, setEmail] = useState<string | null>(null);
 	const router = useRouter();
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -58,51 +59,54 @@ function Header() {
 					setUserName(`${userData.displayName}`);
 					setEmail(userData.email);
 					setPhotoURL(userData.photoURL);
+					setIsEmailVerified(userData.isEmailVerified);
 				}
 
 				// Check if the user's email is verified
-				// if (user.emailVerified) {
-				// 	try {
-				// 		// Retrieve user data from localStorage
-				// 		const storedUserData = localStorage.getItem("GoogleUserData");
-				// 		if (storedUserData) {
-				// 			const parsedUserData = JSON.parse(storedUserData);
-				// 			const { firstName, lastName, displayName, photoURL } =
-				// 				parsedUserData;
+				if (isEmailVerified) {
+					try {
+						// Retrieve user data from localStorage
+						const storedUserData = localStorage.getItem("SocialData");
+						if (storedUserData) {
+							const parsedUserData = JSON.parse(storedUserData);
+							const { firstName, lastName, displayName, photoURL } =
+								parsedUserData;
 
-				// 			// Check if the user already exists in Firestore
-				// 			const userDoc = await getDoc(doc(db, "users", user.uid));
-				// 			if (!userDoc.exists()) {
-				// 				// Save user data to Firestore after email verification
-				// 				await setDoc(doc(db, "users", user.uid), {
-				// 					firstName,
-				// 					lastName,
-				// 					email: user.email,
-				// 					id: user.uid,
-				// 					photoURL: photoURL || user.photoURL,
-				// 					address: "",
-				// 					city: "",
-				// 					country: "",
-				// 					phoneNumber: "",
-				// 					displayName: displayName || "",
-				// 				});
-				// 			}
-				// 		} else {
-				// 			console.error("GoogleUserData not found in localStorage");
-				// 		}
+							// Check if the user already exists in Firestore
+							const userDoc = await getDoc(doc(db, "users", user.uid));
+							if (!userDoc.exists()) {
+								// Save user data to Firestore after email verification
+								await setDoc(doc(db, "users", user.uid), {
+									firstName,
+									lastName,
+									email: user.email,
+									id: user.uid,
+									photoURL: photoURL || user.photoURL,
+									address: "",
+									city: "",
+									country: "",
+									phoneNumber: "",
+									displayName: displayName || "",
+									isEmailVerified: true,
+									createdAt: new Date(),
+								});
+							}
+						} else {
+							console.error("SocialData not found in localStorage");
+						}
 
-				// 		// Fetch user data from Firestore
-				// 		const userDoc = await getDoc(doc(db, "users", user.uid));
-				// 		if (userDoc.exists()) {
-				// 			const userData = userDoc.data();
-				// 			setUserName(`${userData.displayName}`);
-				// 			setEmail(userData.email);
-				// 			setPhotoURL(userData.photoURL);
-				// 		}
-				// 	} catch (error) {
-				// 		console.error("Error retrieving or saving user data:", error);
-				// 	}
-				// }
+						// Fetch user data from Firestore
+						const userDoc = await getDoc(doc(db, "users", user.uid));
+						if (userDoc.exists()) {
+							const userData = userDoc.data();
+							setUserName(`${userData.displayName}`);
+							setEmail(userData.email);
+							setPhotoURL(userData.photoURL);
+						}
+					} catch (error) {
+						console.error("Error retrieving or saving user data:", error);
+					}
+				}
 			}
 		});
 		// Clean up subscription on unmount
@@ -112,6 +116,7 @@ function Header() {
 	const handleLogout = async () => {
 		try {
 			await signOut(auth);
+			setUser(null);
 			toast.success("You have been signed out.");
 			router.push("/");
 		} catch (error) {
@@ -140,7 +145,7 @@ function Header() {
 				pathname === link
 					? "text-[#231867] dark:text-[#B47B2B]"
 					: "text-[#292D32] dark:text-white"
-			} hover:text-[#B47B2B]`}
+			} hover:text-[#B47B2B] dark:hover:text-[#B47B2B]`}
 		>
 			<Link href={link} onClick={closeMenu}>
 				{title}
@@ -195,6 +200,17 @@ function Header() {
 						{primaryNavigation.map((item) => (
 							<NavItem key={item.title} {...item} />
 						))}
+
+						{/* Favourites */}
+						<li
+							className={`font-open-sans text-xl font-normal p-[10px] cursor-pointer ${
+								pathname === "/wishlists"
+									? "text-[#231867] dark:text-[#B47B2B]"
+									: "text-[#292D32] dark:text-white"
+							} hover:text-[#B47B2B] dark:hover:text-[#B47B2B]`}
+						>
+							<Link href={!user ? "/sign-in" : "/wishlists"}>Favourites</Link>
+						</li>
 					</ul>
 
 					{/* Icons Menu */}
@@ -335,13 +351,26 @@ function Header() {
 												pathname === link
 													? "text-[#231867] dark:text-[#B47B2B]"
 													: "text-[#292D32] dark:text-white"
-											} hover:text-[#B47B2B]`}
+											} hover:text-[#B47B2B] dark:hover:text-[#B47B2B]`}
 										>
 											<Link href={link} onClick={closeMenu}>
 												{title}
 											</Link>
 										</DropdownMenuItem>
 									))}
+
+									{/* Favourites */}
+									<DropdownMenuItem
+										className={`font-open-sans text-xl font-normal p-[10px] cursor-pointer ${
+											pathname === "/wishlists"
+												? "text-[#231867] dark:text-[#B47B2B]"
+												: "text-[#292D32] dark:text-white"
+										} hover:text-[#B47B2B] dark:hover:text-[#B47B2B]`}
+									>
+										<Link href={!user ? "/sign-in" : "/wishlists"}>
+											Favourites
+										</Link>
+									</DropdownMenuItem>
 
 									<DropdownMenuItem className="sm:hidden">
 										<Link

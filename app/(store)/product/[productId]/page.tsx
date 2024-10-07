@@ -3,14 +3,14 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CircleArrowLeft, UserRoundCheck } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star } from "lucide-react";
 import { FaStar } from "react-icons/fa";
 import { useSearchParams } from "next/navigation"; // For dynamic route params
+
 import { store } from "@/lib/store";
 import { auth } from "@/firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Gallery from "@/components/Gallery";
 import ProductInfo from "@/components/ProductInfo";
 import { Separator } from "@/components/ui/separator";
@@ -33,7 +33,7 @@ interface Review {
 }
 
 const ProductDetail = () => {
-	const { currentUser, getUserInfo } = store();
+	// const { currentUser, getUserInfo } = store();
 	const router = useRouter();
 	const [reviewTitle, setReviewTitle] = useState<string>("");
 	const [reviewMessage, setReviewMessage] = useState<string>("");
@@ -41,7 +41,7 @@ const ProductDetail = () => {
 	const [hoverRating, setHoverRating] = useState<number>(0);
 	const [reviews, setReviews] = useState<Review[]>([]);
 	const [errors, setErrors] = useState<Partial<Review>>({});
-	// const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+	const user = auth.currentUser;
 
 	const searchParams = useSearchParams();
 	const productId = searchParams.get("id");
@@ -52,16 +52,6 @@ const ProductDetail = () => {
 		if (savedReviews) {
 			setReviews(JSON.parse(savedReviews));
 		}
-
-		const unSub = onAuthStateChanged(auth, (user) => {
-			if (user) {
-				getUserInfo(user?.uid);
-			}
-			// setIsAuthenticated(!!user); // Set authentication status
-		});
-		return () => {
-			unSub();
-		};
 	}, [productId]);
 
 	if (!product) {
@@ -134,18 +124,19 @@ const ProductDetail = () => {
 		e.preventDefault();
 
 		// Check if user is authenticated
-		if (!currentUser) {
+		if (!user) {
 			toast("Please log in to submit a review.");
 			return;
 		}
+		console.log(user);
 
 		const validationErrors = validateForm();
 		setErrors(validationErrors);
 
 		if (Object.keys(validationErrors).length === 0) {
 			const newReview: Review = {
-				name: currentUser?.displayName || "Anonymous",
-				ImageUrl: currentUser.photoURL,
+				name: user?.displayName || "Anonymous",
+				ImageUrl: user?.photoURL || "",
 				date: new Date().toLocaleDateString(),
 				rating: selectedRating,
 				reviewTitle,
@@ -158,6 +149,8 @@ const ProductDetail = () => {
 				`reviews-${productId}`,
 				JSON.stringify(updatedReviews)
 			);
+
+			toast.success("Review submitted successfully!");
 
 			setReviewTitle("");
 			setReviewMessage("");
@@ -205,10 +198,10 @@ const ProductDetail = () => {
 					reviews.slice(0, 6).map((review, index) => (
 						<div key={index} className="mb-8">
 							<div className="mb-[22px] flex sm:items-center gap-4">
-								{currentUser?.photoURL || review?.ImageUrl ? (
+								{user?.photoURL || review?.ImageUrl ? (
 									<Avatar className="w-12 h-12 shrink-0">
 										<AvatarImage
-											src={currentUser?.photoURL || review?.ImageUrl}
+											src={user?.photoURL || review?.ImageUrl}
 											alt={"User profile picture"}
 										/>
 									</Avatar>

@@ -40,7 +40,7 @@ const ProductItemDetail = ({ product }: { product: ProductType }) => {
 					{product?.newPrice ? (
 						<p className="text-sm lg:text-base font-bold font-open-sans text-figure-text dark:text-white flex items-baseline gap-[5.47px] my-2 lg:my-3">
 							₦{product.newPrice.toLocaleString()}
-							<span className="line-through font-normal text-[11.74px] leading-[15.98px] text-old-price-text">
+							<span className="line-through font-normal text-xs lg:text-sm text-old-price-text">
 								₦{product.oldPrice.toLocaleString()}
 							</span>
 						</p>
@@ -104,7 +104,7 @@ const ProductItemDetail = ({ product }: { product: ProductType }) => {
 					{/* Button to toggle SizeChart visibility */}
 					<button
 						onClick={() => router.push("/size-chart-description")}
-						className="border-none outline-none font-open-sans text-black dark:text-white font-normal text-sm lg:text-lg leading-[24px] hover:underline"
+						className="border-none outline-none font-open-sans text-black dark:text-white font-normal text-sm underline"
 					>
 						View Size Chart
 					</button>

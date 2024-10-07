@@ -35,11 +35,13 @@ function SignInWithGoogle() {
 					country: "",
 					phoneNumber: "",
 					displayName: user.displayName || "",
+					isEmailVerified: true,
+					createdAt: new Date(),
 				});
 
 				// Temporary store user data in local storage
 				localStorage.setItem(
-					"GoogleUserData",
+					"SocialData",
 					JSON.stringify({
 						firstName: firstName,
 						lastName: lastName,
@@ -51,6 +53,8 @@ function SignInWithGoogle() {
 						country: "",
 						phoneNumber: "",
 						displayName: user.displayName || "",
+						isEmailVerified: true,
+						createdAt: new Date(),
 					})
 				);
 
