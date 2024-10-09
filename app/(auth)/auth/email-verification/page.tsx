@@ -39,14 +39,11 @@ const FormSchema = z.object({
 });
 
 function OTPVerification() {
-	// const [otp, setOtp] = useState("");
 	const [error, setError] = useState("");
 	const [resendAttempts, setResendAttempts] = useState(0);
 	const [canResend, setCanResend] = useState(false);
 	const [resendTimer, setResendTimer] = useState(60);
 	const [userId, setUserId] = useState("");
-	const [email, setEmail] = useState("");
-	const [firstName, setFirstName] = useState("");
 	const router = useRouter();
 
 	const form = useForm<z.infer<typeof FormSchema>>({
@@ -56,102 +53,96 @@ function OTPVerification() {
 		},
 	});
 
+	// On mount, retrieve resendAttempts and resendTimer from sessionStorage
+	useEffect(() => {
+		const storedAttempts = sessionStorage.getItem("resendAttempts");
+		const storedTimer = sessionStorage.getItem("resendTimer");
+		const storedStartTime = sessionStorage.getItem("startTime");
+
+		// Parse values from sessionStorage and set state
+		if (storedAttempts) {
+			setResendAttempts(JSON.parse(storedAttempts));
+		}
+
+		if (storedTimer && storedStartTime) {
+			const initialCountdown = JSON.parse(storedTimer);
+			const startTime = JSON.parse(storedStartTime);
+
+			const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+			const remainingTime = initialCountdown - elapsedTime;
+
+			if (remainingTime > 0) {
+				setResendTimer(remainingTime);
+				setCanResend(false); // Disable resend button during countdown
+			} else {
+				setResendTimer(0);
+				setCanResend(true); // Enable resend button after countdown
+			}
+		} else {
+			// First-time visit: Set initial countdown to 60 seconds
+			setResendTimer(60);
+			setCanResend(false);
+			const startTime = Date.now();
+			sessionStorage.setItem("startTime", JSON.stringify(startTime));
+		}
+	}, []);
+
+	// Update sessionStorage whenever resendAttempts changes
+	useEffect(() => {
+		sessionStorage.setItem("resendAttempts", JSON.stringify(resendAttempts));
+	}, [resendAttempts]);
+
+	// Timer logic to update resendTimer and canResend
 	useEffect(() => {
 		if (!canResend && resendTimer > 0) {
-			const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
-			return () => clearTimeout(timer);
+			const timer = setInterval(() => {
+				setResendTimer((prev) => {
+					if (prev <= 1) {
+						clearInterval(timer);
+						setCanResend(true);
+						return 0;
+					}
+					sessionStorage.setItem("resendTimer", JSON.stringify(prev - 1));
+					return prev - 1;
+				});
+			}, 1000);
+			return () => clearInterval(timer);
 		} else if (resendTimer === 0) {
-			setCanResend(true);
+			setCanResend(true); // Allow resend when timer hits 0
 		}
 	}, [resendTimer, canResend]);
 
 	useEffect(() => {
-		// Reset timer to 10 minutes after reaching the 1-hour cooldown
-		if (resendAttempts >= 3) {
-			setResendTimer(1800); // 30 mins in seconds
-		} else if (resendAttempts > 0) {
-			setResendTimer(60); // 10 minutes in seconds after 3 attempts
-		} else {
-			setResendTimer(60); // Default 60 seconds
-		}
-	}, [resendAttempts]);
-
-	useEffect(() => {
-		// Retrieve the stored user data from session storage
-		const storedUserId = sessionStorage.getItem("registrationData");
-		// console.log(storedUserId);
-
-		// Redirect user to register, if data is missing
+		const storedUserId = sessionStorage.getItem("userId");
+		console.log("storedUserId:", storedUserId);
 		if (!storedUserId) {
 			router.push("/sign-up");
 		} else {
 			setUserId(storedUserId);
 		}
 
-		const fetchUserData = async () => {
-			// Check if the user's email is verified
+		const confirmUserData = async () => {
 			if (userId) {
-				try {
-					// Retrieve user data from localStorage
-					const storedUserData = localStorage.getItem("registrationData");
-					if (storedUserData) {
-						const parsedUserData = JSON.parse(storedUserData);
-						const {
-							firstName,
-							lastName,
-							email,
-							displayName,
-							address,
-							city,
-							country,
-							phoneNumber,
-							id,
-							photoURL,
-						} = parsedUserData;
-
-						// Check if the user already exists in Firestore
-						const userDoc = await getDoc(doc(db, "users", userId));
-						if (!userDoc.exists()) {
-							// Save user data to Firestore after email verification
-							await setDoc(doc(db, "users", userId), {
-								firstName,
-								lastName,
-								email,
-								id,
-								photoURL,
-								address,
-								city,
-								country,
-								phoneNumber,
-								displayName,
-							});
+				const userDoc = await getDoc(doc(db, "users", userId));
+				if (!userDoc.exists()) {
+					try {
+						const storedUserData = localStorage.getItem("registrationData");
+						if (storedUserData) {
+							const parsedUserData = JSON.parse(storedUserData);
+							await setDoc(doc(db, "users", userId), parsedUserData);
 						}
-					} else {
-						console.error("registrationData not found in localStorage");
+					} catch (error) {
+						console.error("Error retrieving or saving user data:", error);
 					}
-
-					// Fetch user data from Firestore
-					const userDoc = await getDoc(doc(db, "users", userId));
-					if (userDoc.exists()) {
-						const userData = userDoc.data();
-						setEmail(userData.email);
-						setFirstName(userData.firstName);
-					}
-				} catch (error) {
-					console.error("Error retrieving or saving user data:", error);
 				}
 			}
 		};
 
-		fetchUserData();
-	}, [userId, router]);
+		confirmUserData();
+	}, []);
 
 	if (!userId) {
-		return (
-			<div className="h-screen flex items-center justify-center">
-				<Loader />
-			</div>
-		); // Render loading state until the data is retrieved
+		return <Loader />;
 	}
 
 	const handleVerifyOTP = async (data: z.infer<typeof FormSchema>) => {
@@ -166,12 +157,9 @@ function OTPVerification() {
 
 			const userData = userDoc.data();
 			const currentOtp = userData.otpCode;
-			const otpExpiredAt = userData.otpExpiredAt
-				? userData.otpExpiredAt.toDate()
-				: null;
+			const otpExpiredAt = userData.otpExpiredAt?.toDate();
 			const isOtpValid = otpExpiredAt && otpExpiredAt > new Date();
 
-			// Check if OTP matches and is still valid
 			if (data.pin === currentOtp && isOtpValid) {
 				await updateDoc(userDocRef, {
 					isEmailVerified: true,
@@ -181,8 +169,11 @@ function OTPVerification() {
 				});
 
 				toast.success("OTP verified successfully!");
-				router.push("/sign-in"); // Redirect to sign in after successful verification
-				localStorage.removeItem("registrationData"); // Clear registration data from local storage
+				router.push("/sign-in");
+				localStorage.removeItem("registrationData");
+				sessionStorage.removeItem("userId");
+				sessionStorage.removeItem("UserEmail");
+				sessionStorage.removeItem("userFirstName");
 			} else {
 				setError("Invalid or expired OTP.");
 			}
@@ -194,10 +185,16 @@ function OTPVerification() {
 
 	const handleResendOtp = async () => {
 		if (resendAttempts >= 3) {
-			setError("Maximum resend attempts reached. Please wait 1 hour.");
+			setError("Maximum resend attempts reached. Please wait 15 minutes.");
+			setResendTimer(15 * 60); // Set timer to 15 minutes for further resends
+			setCanResend(false);
+			const startTime = Date.now();
+			sessionStorage.setItem("startTime", JSON.stringify(startTime));
 			return;
 		}
 
+		const email = sessionStorage.getItem("UserEmail");
+		const firstName = sessionStorage.getItem("userFirstName");
 		const { otp, otpExpiredAt } = generateOTP(); // Generate new OTP
 
 		try {
@@ -207,39 +204,55 @@ function OTPVerification() {
 				otpExpiredAt: otpExpiredAt,
 			});
 
+			console.log("Sending request to /api/send");
+			console.log("new otp:", otp);
+			console.log("email:", email);
+			console.log("firstName:", firstName);
 			const response = await fetch("/api/send", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ firstName, email, otp }), // Send the required data
+				body: JSON.stringify({ firstName, email, otp }),
 			});
 
-			if (response.status === 200) {
-				toast.success("OTP resent successfully! Check your email.");
-			}
-			console.log("OTP resent successful, OTP sent via email"); // Send OTP via email
+			console.log("Response status:", response.status);
+			console.log("Response headers:", response.headers);
 
-			// Increment resend attempts and adjust the resend timer
-			const newResendAttempts = resendAttempts + 1;
-			setResendAttempts(newResendAttempts);
-			setCanResend(false);
-			setResendTimer(newResendAttempts >= 3 ? 1800 : 600); // 1 hour for 3 attempts or 10 minutes otherwise
-		} catch (err) {
-			setError("Error resending OTP.");
-			console.error("OTP Resend error: ", err);
+			const responseData = await response.json();
+			console.log("Response data:", responseData);
+
+			if (response.ok) {
+				// Increment the resend attempts
+				setResendAttempts((prev) => prev + 1);
+
+				// Reset timer to 60 seconds after a resend
+				setResendTimer(60);
+				setCanResend(false);
+				const startTime = Date.now();
+				sessionStorage.setItem("startTime", JSON.stringify(startTime));
+				toast.success(
+					"OTP resent successfully! \n Check your email for the verification code."
+				);
+				console.log("OTP resent successful, OTP sent via email");
+			} else {
+				toast.error(`Failed to send OTP: ${responseData.error}`);
+				console.error("Failed to send OTP:", responseData.error);
+			}
+		} catch (error) {
+			toast.error("An error occurred while sending OTP");
+			console.error("Error sending OTP:", error);
 		}
 	};
 
 	return (
 		<section className="flex min-h-screen items-center justify-center bg-white max-2xl:dark:bg-[#2E2E2E]">
 			<div className="flex flex-col lg:flex-row gap-8 lg:gap-10 xl:gap-[133px] w-full justify-center items-center xl:justify-start bg-white dark:bg-[#2E2E2E] px-[5%] sm:p-5 overflow-hidden">
-				{/* Image Container */}
 				<div className="relative rounded-3xl max-h-screen overflow-hidden max-w-full md:max-w-[50%] lg:max-w-[50%] max-lg:mt-5">
 					<Image
 						src="/assets/signIn-banner.png"
 						alt="DNBL Fashion"
 						width={700}
 						height={984}
-						className="max-w-full h-[65vh] sm:h-[80vh] object-cover lg:h-auto" // Set height for mobile and auto for larger screens
+						className="max-w-full h-[65vh] sm:h-[80vh] object-cover lg:h-auto"
 					/>
 					<div className="absolute inset-0 bg-sign-in-layer"></div>
 					<Image
@@ -252,10 +265,7 @@ function OTPVerification() {
 				</div>
 
 				<div className="flex-1 w-full max-w-full md:max-w-[400px] px-4 md:px-0">
-					{/* Heading */}
 					<h1 className="heading">Enter verification code</h1>
-
-					{/* Headline */}
 					<p className="headline">Please check your email for the code.</p>
 
 					<Form {...form}>
@@ -270,8 +280,8 @@ function OTPVerification() {
 												maxLength={6}
 												{...field}
 												onChange={(e) => {
-													field.onChange(e); // Keep the form state in sync
-													setError(""); // Clear the error state when the user types
+													field.onChange(e);
+													setError("");
 												}}
 											>
 												<InputOTPGroup className="gap-2 sm:gap-5 mb-5 justify-self-center">
@@ -294,7 +304,9 @@ function OTPVerification() {
 							{resendTimer > 0 && (
 								<p className="font-fredoka text-base font-light leading-[22.4px] text-black dark:text-gray-100 text-center pt-3">
 									Resend OTP in {Math.floor(resendTimer / 60)}:
-									{resendTimer % 60}
+									{resendTimer % 60 < 10
+										? `0${resendTimer % 60}`
+										: resendTimer % 60}
 								</p>
 							)}
 

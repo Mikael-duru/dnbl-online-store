@@ -31,7 +31,7 @@ const Modal: FC<ModalProps> = ({
 
 	return (
 		<div className="fixed inset-0 z-50 flex items-center justify-center bg-banner-layer px-4">
-			<div className="bg-white rounded-xl shadow-btn-shadow w-full px-6 py-8 sm:w-[400px] md:w-[538px] md:pt-[54px] md:pr-[68px] md:pb-[91px] md:pl-[70px]">
+			<div className="bg-white dark:bg-[#1E1E1E] rounded-xl shadow-btn-shadow w-full px-6 py-8 sm:w-[400px] md:w-[538px] md:pt-[54px] md:pr-[68px] md:pb-[91px] md:pl-[70px]">
 				<div className="flex flex-col items-center justify-between gap-5 mb-2">
 					<button onClick={onClose}>
 						<Image src={src} alt="" width={100} height={100} />

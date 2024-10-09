@@ -1,21 +1,24 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserRoundCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { IoClose } from "react-icons/io5";
+import type { User } from "firebase/auth";
+import { MdPhotoLibrary } from "react-icons/md";
 
 import LeftSideBar from "@/components/user-dashboard/LeftSideBar";
 import ButtonPrimary from "@/components/ButtonPrimary";
-// import Loader from "@/components/Loader";
 import { onAuthStateChanged } from "firebase/auth";
-import { store } from "@/lib/store";
 import { auth, db } from "@/firebase/firebase";
-import { doc, updateDoc } from "firebase/firestore";
+import { getDoc, doc, updateDoc } from "firebase/firestore";
 import uploadFile from "@/lib/upload";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 function EditProfile() {
+	const [user, setUser] = useState<User | null>(null);
+	const [userName, setUserName] = useState<string | null>(null);
+	const [userPhotoURL, setUserPhotoURL] = useState<string>("");
 	const router = useRouter();
 	const [photoURL, setPhotoURL] = useState({
 		file: null,
@@ -28,39 +31,57 @@ function EditProfile() {
 		phoneNumber: "",
 	});
 	const [initialValues, setInitialValues] = useState(formData);
-	const { currentUser, getUserInfo } = store();
 
 	useEffect(() => {
-		const unSub = onAuthStateChanged(auth, (user) => {
+		const unsubscribe = onAuthStateChanged(auth, async (user) => {
 			if (user) {
-				getUserInfo(user?.uid);
+				setUser(user);
+
+				try {
+					const userDoc = await getDoc(doc(db, "users", user.uid));
+					if (userDoc.exists()) {
+						const userData = userDoc.data();
+						setUserName(userData.displayName);
+						setUserPhotoURL(userData.photoURL);
+
+						// Set formData with existing user data
+						setFormData({
+							address: userData.address || "",
+							city: userData.city || "",
+							country: userData.country || "",
+							phoneNumber: userData.phoneNumber || "",
+						});
+
+						// Set initial values for comparison during edits
+						setInitialValues({
+							address: userData.address || "",
+							city: userData.city || "",
+							country: userData.country || "",
+							phoneNumber: userData.phoneNumber || "",
+						});
+					}
+				} catch (error) {
+					console.error("Error fetching user data:", error);
+				}
+			} else {
+				setUser(null);
+				// Reset form data if user is logged out
+				setFormData({
+					address: "",
+					city: "",
+					country: "",
+					phoneNumber: "",
+				});
+				setInitialValues(formData);
 			}
 		});
-		return () => {
-			unSub();
-		};
-	}, [getUserInfo]);
 
-	useEffect(() => {
-		// Set initial values when currentUser changes
-		if (currentUser) {
-			setInitialValues({
-				address: currentUser.address || "",
-				city: currentUser.city || "",
-				country: currentUser.country || "",
-				phoneNumber: currentUser.phoneNumber || "",
-			});
-			setFormData({
-				address: currentUser.address || "",
-				city: currentUser.city || "",
-				country: currentUser.country || "",
-				phoneNumber: currentUser.phoneNumber || "",
-			});
-		}
-	}, [currentUser]);
+		// Clean up subscription on unmount
+		return () => unsubscribe();
+	}, []);
 
 	const handlePhotoURL = (e: any) => {
-		if (e.target.files && e.target.files[0]) {
+		if (e.target.files[0]) {
 			setPhotoURL({
 				file: e.target.files[0],
 				url: URL.createObjectURL(e.target.files[0]),
@@ -80,7 +101,7 @@ function EditProfile() {
 		e.preventDefault();
 
 		try {
-			if (currentUser) {
+			if (user) {
 				const updates: Record<string, any> = {};
 
 				// Only add fields that have changed
@@ -100,7 +121,7 @@ function EditProfile() {
 
 				// Only update the document if there are any changes
 				if (Object.keys(updates).length > 0) {
-					await updateDoc(doc(db, "users", currentUser.id), updates);
+					await updateDoc(doc(db, "users", user.uid), updates);
 					console.log("User data updated successfully");
 
 					// Clear the form fields
@@ -143,20 +164,23 @@ function EditProfile() {
 
 					{/* User Info */}
 					<div className="mb-[30px]">
-						{currentUser?.photoURL || photoURL?.url ? (
-							<Avatar className="w-[150px] h-[150px] sm:w-[167px] sm:h-[167px] rounded-full cursor-pointer">
-								<AvatarImage
-									src={currentUser?.photoURL || photoURL?.url}
-									alt={"User profile picture"}
-								/>
-							</Avatar>
-						) : (
-							<Avatar className="w-[150px] h-[150px] sm:w-[167px] sm:h-[167px] rounded-full cursor-pointer">
-								<AvatarFallback className="text-7xl font-libre-franklin tracking-wide">
-									<UserRoundCheck size={70} />
-								</AvatarFallback>
-							</Avatar>
-						)}
+						<Avatar className="w-[150px] h-[150px] sm:w-[167px] sm:h-[167px] rounded-full cursor-pointer">
+							{user || photoURL?.url ? (
+								<>
+									<AvatarImage
+										src={photoURL?.url || userPhotoURL}
+										alt={"User profile picture"}
+									/>
+									<AvatarFallback className="text-7xl font-libre-franklin tracking-wide">
+										<UserRoundCheck size={70} />
+									</AvatarFallback>
+								</>
+							) : (
+								<div className="w-[150px] h-[150px] sm:w-[167px] sm:h-[167px] rounded-full cursor-pointer border-8">
+									<MdPhotoLibrary className="mx-auto h-full w-[60%] text-gray-500" />
+								</div>
+							)}
+						</Avatar>
 
 						<div className="mt-4 flex items-center mb-1 text-sm leading-6 text-gray-400">
 							<label htmlFor="file-upload" className="pl-6">
@@ -179,17 +203,21 @@ function EditProfile() {
 							PNG, JPG, GIF up to 10MB
 						</p>
 
-						<h2 className="font-open-sans font-normal text-lg text-black dark:text-white mt-4 sm:pb-2">
-							{currentUser?.displayName}
-						</h2>
-						<p className="font-open-sans font-normal text-base leading-[28px] text-black dark:text-white">
-							{currentUser?.email}
-						</p>
+						{user && (
+							<div className="mt-4">
+								<h2 className="font-open-sans font-normal text-lg text-black dark:text-white sm:pb-2">
+									{user?.displayName || userName}
+								</h2>
+								<p className="font-open-sans font-normal text-base leading-[28px] text-black dark:text-white">
+									{user?.email}
+								</p>
+							</div>
+						)}
 					</div>
 
 					{/* Form */}
 					<form onSubmit={handleEdit}>
-						<div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+						<div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-4">
 							{/* Address */}
 							<div>
 								<label

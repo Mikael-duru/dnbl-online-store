@@ -5,7 +5,11 @@ import Input from "../Input";
 import { useRouter } from "next/navigation";
 import Loader from "../Loader";
 
-const ConfirmDeleteUser: React.FC = () => {
+interface ConfirmDeleteUserProps {
+	setOpen: (open: boolean) => void; // Add setOpen prop type
+}
+
+const ConfirmDeleteUser: React.FC<ConfirmDeleteUserProps> = ({ setOpen }) => {
 	const router = useRouter();
 	const [password, setPassword] = React.useState("");
 	const [isLoading, setIsLoading] = React.useState(false);
@@ -17,7 +21,7 @@ const ConfirmDeleteUser: React.FC = () => {
 		(provider) => provider.providerId === "google.com"
 	);
 
-	if (isLoading) return <Loader />;
+	if (isLoading) return <div>Loading...</div>;
 
 	if (isGoogleUser) {
 		return (
@@ -26,12 +30,15 @@ const ConfirmDeleteUser: React.FC = () => {
 					Are you absolutely sure?
 				</h2>
 				<p className="font-open-sans font-normal text-base sm:text-lg text-figure-text my-4 dark:text-gray-300">
-					This action can not be undone. This will permanently delete your
+					This action cannot be undone. This will permanently delete your
 					account and remove your data from our server.
 				</p>
 				<div className="mt-4 flex flex-col-reverse gap-5 sm:flex-row justify-center items-center sm:gap-4">
 					<div className="w-[150px]">
-						<button className="w-full text-base leading-[21.79px] font-open-sans font-semibold p-[10px] border border-[#F23E3E] rounded-lg focus:ring-1 focus:ring-[#F23E3E] outline-none">
+						<button
+							className="w-full text-base leading-[21.79px] font-open-sans font-semibold p-[10px] border border-[#F23E3E] rounded-lg focus:ring-1 focus:ring-[#F23E3E] outline-none"
+							onClick={() => setOpen(false)} // Close the modal
+						>
 							Cancel
 						</button>
 					</div>
@@ -39,9 +46,15 @@ const ConfirmDeleteUser: React.FC = () => {
 						<button
 							type="button"
 							className="w-full text-base leading-[21.79px] font-open-sans font-semibold text-white p-[10px] border border-[#F23E3E] bg-[#F23E3E] outline-none rounded-lg hover:scale-95 duration-300 focus:ring-1 focus:ring-[#F23E3E]"
-							onClick={() =>
-								deleteUserFromFirestore(false, true, setIsLoading, router)
-							}
+							onClick={async () => {
+								await deleteUserFromFirestore(
+									false,
+									true,
+									setIsLoading,
+									router
+								);
+								setOpen(false);
+							}}
 						>
 							Confirm delete
 						</button>
@@ -58,7 +71,7 @@ const ConfirmDeleteUser: React.FC = () => {
 					Are you absolutely sure?
 				</h2>
 				<p className="font-open-sans font-normal text-base sm:text-lg text-figure-text dark:text-gray-300">
-					This action can not be undone. This will permanently delete your
+					This action cannot be undone. This will permanently delete your
 					account and remove your data from our server.
 				</p>
 				<p className="text-sm text-gray-500 dark:text-white">
@@ -72,7 +85,10 @@ const ConfirmDeleteUser: React.FC = () => {
 				/>
 				<div className="mt-4 flex flex-col-reverse gap-5 sm:flex-row justify-center items-center sm:gap-4">
 					<div className="w-[150px]">
-						<button className="w-full text-base leading-[21.79px] font-open-sans font-semibold p-[10px] border border-[#F23E3E] rounded-lg focus:ring-1 focus:ring-[#F23E3E] outline-none">
+						<button
+							className="w-full text-base leading-[21.79px] font-open-sans font-semibold p-[10px] border border-[#F23E3E] rounded-lg focus:ring-1 focus:ring-[#F23E3E] outline-none"
+							onClick={() => setOpen(false)} // Close the modal
+						>
 							Cancel
 						</button>
 					</div>

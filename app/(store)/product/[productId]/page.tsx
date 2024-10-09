@@ -6,10 +6,9 @@ import { CircleArrowLeft, UserRoundCheck } from "lucide-react";
 import { Star } from "lucide-react";
 import { FaStar } from "react-icons/fa";
 import { useSearchParams } from "next/navigation"; // For dynamic route params
+import { onAuthStateChanged, type User } from "firebase/auth";
 
-import { store } from "@/lib/store";
-import { auth } from "@/firebase/firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { auth, db } from "@/firebase/firebase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Gallery from "@/components/Gallery";
 import ProductInfo from "@/components/ProductInfo";
@@ -22,6 +21,7 @@ import ButtonPrimary from "@/components/ButtonPrimary";
 import RecentlyViewed from "@/components/RecentlyViewedProducts";
 import { getProductById } from "@/constants/productsStore";
 import toast from "react-hot-toast";
+import { doc, onSnapshot } from "firebase/firestore";
 
 interface Review {
 	name: string;
@@ -33,15 +33,54 @@ interface Review {
 }
 
 const ProductDetail = () => {
-	// const { currentUser, getUserInfo } = store();
 	const router = useRouter();
+	const [user, setUser] = useState<User | null>(null);
+	const [userName, setUserName] = useState<string | null>(null);
+	const [photoURL, setPhotoURL] = useState<string>("");
 	const [reviewTitle, setReviewTitle] = useState<string>("");
 	const [reviewMessage, setReviewMessage] = useState<string>("");
 	const [selectedRating, setSelectedRating] = useState<number>(0);
 	const [hoverRating, setHoverRating] = useState<number>(0);
 	const [reviews, setReviews] = useState<Review[]>([]);
 	const [errors, setErrors] = useState<Partial<Review>>({});
-	const user = auth.currentUser;
+
+	useEffect(() => {
+		// Set up an authentication state listener
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
+			if (user) {
+				// User is signed in; update user state
+				setUser(user);
+
+				// Reference to the user's document in Firestore
+				const userDocRef = doc(db, "users", user.uid);
+
+				// Listen for real-time updates to the user's document in Firestore
+				const unsubscribeDoc = onSnapshot(userDocRef, (doc) => {
+					if (doc.exists()) {
+						// Update local state with user data from Firestore
+						const userData = doc.data();
+						setUserName(userData.displayName || ""); // Default to empty if not available
+						setPhotoURL(userData.photoURL || ""); // Default to empty if not available
+					} else {
+						console.error("User document does not exist."); // Log error if document is missing
+					}
+				});
+
+				// Clean up the Firestore listener when the component unmounts
+				return () => {
+					unsubscribeDoc(); // Unsubscribe from the Firestore listener
+				};
+			} else {
+				// User is signed out; reset state
+				setUser(null); // Clear user state
+				setUserName(""); // Clear display name
+				setPhotoURL(""); // Clear photo URL
+			}
+		});
+
+		// Clean up the authentication listener when the component unmounts
+		return () => unsubscribe();
+	}, []); // Empty dependency array means this effect runs once on mount
 
 	const searchParams = useSearchParams();
 	const productId = searchParams.get("id");
@@ -135,8 +174,8 @@ const ProductDetail = () => {
 
 		if (Object.keys(validationErrors).length === 0) {
 			const newReview: Review = {
-				name: user?.displayName || "Anonymous",
-				ImageUrl: user?.photoURL || "",
+				name: userName || "Anonymous",
+				ImageUrl: photoURL || "",
 				date: new Date().toLocaleDateString(),
 				rating: selectedRating,
 				reviewTitle,

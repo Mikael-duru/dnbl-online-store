@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Mail } from "lucide-react";
 import { sendPasswordResetEmail } from "firebase/auth";
 
 import ButtonPrimary from "@/components/ButtonPrimary";
 import { auth } from "@/firebase/firebase";
-// import toast from "react-hot-toast";
 import AlertCard from "@/components/AlertCard";
 
 function ForgetPassword() {
@@ -16,9 +14,6 @@ function ForgetPassword() {
 	const [errors, setErrors] = useState({ email: "" });
 	const [errMsg, setErrMsg] = useState("");
 	const [successMsg, setSuccessMsg] = useState("");
-	const [otp, setOtp] = useState("");
-	const [firstName, setFirstName] = useState("");
-	const router = useRouter();
 
 	const validateEmail = (email: string) => {
 		return /\S+@\S+\.\S+/.test(email);
@@ -94,6 +89,10 @@ function ForgetPassword() {
 						Provide your email to receive password reset instruction.
 					</p>
 
+					<div className="pb-5">
+						{successMsg && <AlertCard alert={successMsg} />}
+					</div>
+
 					<form onSubmit={handleSubmit}>
 						<div className="pb-3">
 							{/* Email field */}
@@ -125,8 +124,6 @@ function ForgetPassword() {
 						{errMsg && (
 							<p className="text-error dark:text-red-500 text-sm">{errMsg}</p>
 						)}
-
-						{successMsg && <AlertCard alert={successMsg} />}
 
 						<div className="pt-3">
 							<ButtonPrimary type="button" label="Send Reset Link" />

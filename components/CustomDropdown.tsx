@@ -44,7 +44,7 @@ const CustomDropdown: React.FC<DropdownProps> = ({
 	return (
 		<div className="relative" ref={dropdownRef}>
 			<div
-				className="flex items-center justify-between w-full px-2 py-2 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer focus:ring-1 focus:ring-gold-text focus:border-[#B47B2B] dark:bg-[#444444] dark:text-white"
+				className="flex items-center justify-between w-full px-2 py-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer focus:ring-1 focus:ring-gold-text focus:border-[#B47B2B] dark:bg-[#444444] dark:text-white"
 				onClick={handleToggle}
 			>
 				<span className="font-libre-franklin font-normal text-sm text-black dark:text-white">

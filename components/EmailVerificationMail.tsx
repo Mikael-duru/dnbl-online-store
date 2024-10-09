@@ -1,172 +1,212 @@
-import * as React from "react";
 import {
-	Html,
-	Text,
-	Heading,
-	Container,
-	Link,
-	Hr,
-	Tailwind,
-	Section,
 	Body,
+	Container,
 	Head,
-	Img,
+	Heading,
+	Hr,
+	Html,
+	// Img,
+	Link,
+	Preview,
+	Section,
+	Text,
 } from "@react-email/components";
+import * as React from "react";
 
-interface EmailTemplateProps {
+interface DNBLVerifyEmailProps {
 	firstName: string;
 	otp: string;
 }
 
-export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
+// const baseUrl = process.env.LOCAL_HOST_URL
+// 	? `http://${process.env.LOCAL_HOST_URL}`
+// 	: "";
+
+export default function DNBLVerifyEmail({
 	firstName,
 	otp,
-}) => (
-	<Html>
-		<Head />
-		<Tailwind>
-			<Body className="min-h-screen font-sans bg-white m-0 p-0 text-base">
-				<Container className="min-h-screen max-w-[800px] mx-auto my-5 p-5 rounded-lg shadow-md">
-					<Section className="text-center">
-						<Heading className="text-lg md:text-2xl text-[#333]">
-							Welcome to DNBL Online Store
-						</Heading>
-					</Section>
-					<Hr className="pt-2 pb-10 mb-4 border-none h-[1px] w-full bg-gray-300 " />
-					<Section className="px-4">
-						<Text className="text-[#333]">
-							Hello <span className="text-[#B47B2B]">{firstName}!,</span>
-						</Text>
-						<Text className="text-[#333]">
-							Thank you for registering with us. To complete your registration,
-							please use the OTP code below to verify your email:
-						</Text>
-						<Text className="text-3xl font-bold my-20 text-center text-[#B47B2B]">
-							{otp}
-						</Text>
-						<Text className="text-[#333]">
-							For security purposes, this code will expire in 10 minutes.
-						</Text>
-						<Text className="text-[#333]">
-							If you did not request this, please disregard it or contact our
-							support team immediately.
-						</Text>
-						<Text className="text-[#333]">Need Help?</Text>
-						<Text className="text-[#333]">
-							If you have any questions or need assistance, feel free to reach
-							out to our customer support at{" "}
-							<Link href="mailto:Customersupport@denobleslimited.com">
-								Customersupport@denobleslimited.com
-							</Link>
-							.
-						</Text>
-						<Text className="text-[#333]">
-							Thank you for trusting{" "}
-							<span className="text-[#B47B2B] font-bold">
-								D&apos;Nobles Fashion House
-							</span>{" "}
-							with your fashion needs.
-						</Text>
-						<Text className="text-[#333]">
-							Best regards,
-							<br />
-							<span className="text-lg text-[#B47B2B] font-bold">
-								DNBL Fashion House Team
-							</span>
-						</Text>
-						<Text className="text-[#333]">Your Fashion, Our Passion</Text>
-						<Section className="my-5">
-							{/* Social Icons */}
-							<Link
-								href="https://www.denobleslimited.com/"
-								title="Website"
-								className="inline-block mr-2"
-							>
-								<Img
-									src="https://cdn-icons-png.flaticon.com/512/25/25694.png"
-									alt="Website"
-									className="w-5 h-5"
-								/>
-							</Link>
-							<Link
-								href="https://www.facebook.com/profile.php?id=61560331935864&mibextid=LQQJ4d"
-								title="Facebook"
-								className="inline-block mr-2"
-							>
-								<Img
-									src="https://cdn-icons-png.flaticon.com/512/145/145802.png"
-									alt="Facebook"
-									className="w-5 h-5"
-								/>
-							</Link>
-							<Link
-								href="https://www.instagram.com/dnbl_fashion?igsh=Ym8yaDBxZXZ0emJj&utm_source=qr"
-								title="Instagram"
-								className="inline-block mr-2"
-							>
-								<Img
-									src="https://cdn-icons-png.flaticon.com/512/174/174855.png"
-									alt="Instagram"
-									className="w-5 h-5"
-								/>
-							</Link>
-							{/* <Link
-							href="https://x.com/dnbl_fashion"
-							title="Twitter"
-							className="inline-block mr-2"
-						>
-							<Img
-								src="https://i.postimg.cc/sXhTvwYw/twitter.png"
-								alt="Twitter"
-								className="w-5 h-5"
-							/>
-						</Link> */}
-							<Link
-								href="https://www.tiktok.com/@dnbl_fashion?_t=8pPQBAP2NWE&_r=1"
-								title="TikTok"
-								className="inline-block"
-							>
-								<Img
-									src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png"
-									alt="TikTok"
-									className="w-5 h-5"
-								/>
-							</Link>
+}: DNBLVerifyEmailProps) {
+	return (
+		<Html>
+			<Head />
+			<Preview>DNBL Email Verification</Preview>
+			<Body style={main}>
+				<Container style={container}>
+					<Section style={coverSection}>
+						<Section style={imageSection}>
+							<Text>DNBL Logo</Text>
+							{/* <Img
+								src={`${baseUrl}/assets/logo-white.svg`}
+								width="75"
+								height="45"
+								alt="DNBL's Logo"
+							/> */}
+						</Section>
+						<Section style={upperSection}>
+							<Heading style={h1}>Verify your email address</Heading>
+
+							<Text style={subHeading}>Hello {firstName}!,</Text>
+
+							<Text style={mainText}>
+								Thank you for trusting us with your fashion needs. We want to
+								make sure it&apos;s really you. Please enter the following
+								verification code when prompted. If you don&apos;t want to
+								create an account, you can ignore this message.
+							</Text>
+							<Section style={verificationSection}>
+								<Text style={verifyText}>Verification code</Text>
+
+								<Text style={codeText}>{otp}</Text>
+								<Text style={validityText}>
+									(This code is valid for 10 minutes)
+								</Text>
+							</Section>
+
+							<Text style={subText}>
+								If you have any questions or need assistance, feel free to reach
+								out to our customer support at{" "}
+								<Link
+									href="mailto:Customersupport@denobleslimited.com"
+									style={link}
+								>
+									Customersupport@denobleslimited.com
+								</Link>
+								.
+							</Text>
+						</Section>
+						<Hr />
+						<Section style={lowerSection}>
+							<Text style={cautionText}>
+								D&apos;Nobles Limited Fashion House will never email you and ask
+								you to disclose or verify your password, credit card, or banking
+								account number.
+							</Text>
 						</Section>
 					</Section>
-					<Section className="text-center text-gray-600 mt-5 text-sm">
-						<Text>
-							Your Fashion, Our Passion
-							<br />
-							<Link
-								href="https://www.denobleslimited.com/privacy-policy"
-								className="text-blue-600 underline"
-							>
-								Privacy Policy
-							</Link>{" "}
-							|{" "}
-							<Link
-								href="https://www.denobleslimited.com/terms-of-use"
-								className="text-blue-600 underline"
-							>
-								Terms of Service
-							</Link>
-							<br />
-							<span className="text-gray-400">
-								4, Layosipe Street, Itamerin
-								<br />
-								Ago-Iwoye
-								<br />
-								Ogun State, Nigeria
-							</span>
-						</Text>
-						<Text>
-							Note: This is an automated message, please do not reply directly
-							to this email.
-						</Text>
-					</Section>
+					<Text style={footerText}>
+						This message was produced and distributed by D&apos;Nobles Limited
+						Fashion House, 4, Layosipe Street, Itamerin, Ago-Iwoye Ogun State. ©
+						2024. All rights reserved. DNBL is a registered trademark of{" "}
+						<Link
+							href="https://www.denobleslimited.com/"
+							target="_blank"
+							style={link}
+						>
+							Denobleslimited.com
+						</Link>
+						. View our{" "}
+						<Link
+							href="https://www.denobleslimited.com/privacy-policy"
+							target="_blank"
+							style={link}
+						>
+							privacy policy
+						</Link>
+						.
+					</Text>
 				</Container>
 			</Body>
-		</Tailwind>
-	</Html>
-);
+		</Html>
+	);
+}
+
+const main = {
+	backgroundColor: "#fff",
+	color: "#212121",
+};
+
+const container = {
+	padding: "20px",
+	margin: "0 auto",
+	backgroundColor: "#eee",
+};
+
+const h1 = {
+	color: "#333",
+	textAlign: "center" as const,
+	fontFamily:
+		"-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
+	fontSize: "20px",
+	fontWeight: "bold",
+	marginBottom: "15px",
+};
+
+const link = {
+	color: "#2754C5",
+	fontFamily:
+		"-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
+	fontSize: "14px",
+	textDecoration: "underline",
+};
+
+const text = {
+	color: "#333",
+	fontFamily:
+		"-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
+	fontSize: "14px",
+	margin: "24px 0",
+};
+
+const imageSection = {
+	backgroundColor: "#252f3d",
+	padding: "20px 0",
+	textAlign: "center" as const,
+	color: "#fff",
+	fontFamily:
+		"-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
+	fontSize: "30px",
+	fontWeight: "bold",
+};
+
+const coverSection = { backgroundColor: "#fff" };
+
+const upperSection = { padding: "25px 35px" };
+
+const lowerSection = { padding: "25px 35px" };
+
+const subHeading = {
+	...text,
+	color: "#B47B2B",
+	fontFamily:
+		"-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
+	fontSize: "18px",
+	fontWeight: "bold",
+	marginBottom: "0px",
+};
+
+const footerText = {
+	...text,
+	fontSize: "12px",
+	padding: "0 20px",
+};
+
+const verifyText = {
+	...text,
+	margin: 0,
+	fontWeight: "bold",
+};
+
+const codeText = {
+	...text,
+	fontWeight: "bold",
+	fontSize: "36px",
+	margin: "10px 0",
+};
+
+const validityText = {
+	...text,
+	margin: "0px",
+	color: "#B47B2B",
+};
+
+const verificationSection = {
+	textAlign: "center" as const,
+};
+
+const mainText = { ...text, marginBottom: "14px" };
+
+const subText = {
+	...text,
+};
+
+const cautionText = { ...text, margin: "0px" };

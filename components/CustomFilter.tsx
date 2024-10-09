@@ -99,7 +99,7 @@ const FilterSection = ({
 			<div className="flex items-center">
 				<input
 					type="number"
-					className="w-full p-2 border border-gray-300 rounded-lg mr-2 dark:bg-[#444444] dark:border-gray-600"
+					className="w-full py-[8.4px] px-2 border border-gray-300 rounded-lg mr-2 dark:bg-[#444444] dark:border-gray-600"
 					value={minPrice}
 					onChange={(e) => {
 						const value = Math.max(0, Number(e.target.value));
@@ -109,7 +109,7 @@ const FilterSection = ({
 				/>
 				<input
 					type="number"
-					className="w-full p-2 border border-gray-300 rounded-lg ml-2 dark:bg-[#444444] dark:border-gray-600"
+					className="w-full py-[8.4px] px-2 border border-gray-300 rounded-lg ml-2 dark:bg-[#444444] dark:border-gray-600"
 					value={maxPrice}
 					onChange={(e) => {
 						const value = Math.max(0, Number(e.target.value));

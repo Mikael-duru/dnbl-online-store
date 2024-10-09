@@ -27,96 +27,110 @@ import ButtonPrimary from "./ButtonPrimary";
 import ButtonSecondary from "./ButtonSecondary";
 import useCart from "@/lib/hook/useCart";
 import { auth, db } from "@/firebase/firebase";
-import { getDoc, doc, setDoc } from "firebase/firestore";
+import { getDoc, doc, setDoc, onSnapshot } from "firebase/firestore";
 import toast from "react-hot-toast";
 
 const primaryNavigation = [
 	{ title: "Home", link: "/" },
 	{ title: "About Us", link: "/about-us" },
 	{ title: "Products", link: "/product" },
-	// { title: "Favourites", link: "/wishlists" },
 ];
 
 function Header() {
 	const [user, setUser] = useState<User | null>(null);
 	const [userName, setUserName] = useState<string | null>(null);
 	const [photoURL, setPhotoURL] = useState<string>("");
-	const [isEmailVerified, setIsEmailVerified] = useState<string>("");
-	const [email, setEmail] = useState<string | null>(null);
 	const router = useRouter();
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const pathname = usePathname();
 	const cart = useCart();
 
 	useEffect(() => {
+		// Set up an authentication state listener
 		const unsubscribe = onAuthStateChanged(auth, async (user) => {
 			if (user) {
+				// User is signed in; update user state
 				setUser(user);
 
-				const userDoc = await getDoc(doc(db, "users", user.uid));
-				if (userDoc.exists()) {
-					const userData = userDoc.data();
-					setUserName(`${userData.displayName}`);
-					setEmail(userData.email);
-					setPhotoURL(userData.photoURL);
-					setIsEmailVerified(userData.isEmailVerified);
-				}
+				// Reference to the user's document in Firestore
+				const userDocRef = doc(db, "users", user.uid);
 
-				// Check if the user's email is verified
-				if (isEmailVerified) {
-					try {
-						// Retrieve user data from localStorage
-						const storedUserData = localStorage.getItem("SocialData");
-						if (storedUserData) {
-							const parsedUserData = JSON.parse(storedUserData);
-							const { firstName, lastName, displayName, photoURL } =
-								parsedUserData;
+				// Listen for real-time updates to the user's document in Firestore
+				const unsubscribeDoc = onSnapshot(userDocRef, async (doc) => {
+					if (doc.exists()) {
+						// Update local state with user data from Firestore
+						const userData = doc.data();
+						setUserName(userData.displayName || ""); // Default to empty if not available
+						setPhotoURL(userData.photoURL || ""); // Default to empty if not available
+					} else {
+						// User document does not exist; handle new users
+						console.error(
+							"User document does not exist. Attempting to save new user data."
+						);
 
-							// Check if the user already exists in Firestore
-							const userDoc = await getDoc(doc(db, "users", user.uid));
-							if (!userDoc.exists()) {
-								// Save user data to Firestore after email verification
-								await setDoc(doc(db, "users", user.uid), {
+						try {
+							const storedUserData = localStorage.getItem("SocialData");
+							if (storedUserData) {
+								// Parse social data from local storage
+								const { firstName, lastName, displayName, photoURL } =
+									JSON.parse(storedUserData);
+
+								// Save new user data to Firestore
+								await setDoc(userDocRef, {
 									firstName,
 									lastName,
 									email: user.email,
 									id: user.uid,
-									photoURL: photoURL || user.photoURL,
+									photoURL: photoURL || user.photoURL, // Use social photo or default
 									address: "",
 									city: "",
 									country: "",
 									phoneNumber: "",
-									displayName: displayName || "",
+									displayName: displayName || user.displayName, // Use social display or default
 									isEmailVerified: true,
-									createdAt: new Date(),
+									createdAt: new Date(), // Save creation date
 								});
-							}
-						} else {
-							console.error("SocialData not found in localStorage");
-						}
 
-						// Fetch user data from Firestore
-						const userDoc = await getDoc(doc(db, "users", user.uid));
-						if (userDoc.exists()) {
-							const userData = userDoc.data();
-							setUserName(`${userData.displayName}`);
-							setEmail(userData.email);
-							setPhotoURL(userData.photoURL);
+								// Remove SocialData from localStorage after saving
+								localStorage.removeItem("SocialData");
+
+								// Fetch user data from Firestore again to update local state
+								const updatedUserDoc = await getDoc(userDocRef);
+								if (updatedUserDoc.exists()) {
+									const userData = updatedUserDoc.data();
+									setUserName(userData.displayName || ""); // Update display name
+									setPhotoURL(userData.photoURL || ""); // Update photo URL
+								}
+							} else {
+								console.error("SocialData not found in localStorage"); // Log error if no social data found
+							}
+						} catch (error) {
+							// Log any errors that occur during retrieval or saving of user data
+							console.error("Error retrieving or saving user data:", error);
 						}
-					} catch (error) {
-						console.error("Error retrieving or saving user data:", error);
 					}
-				}
+				});
+
+				// Clean up the Firestore listener when the component unmounts
+				return () => unsubscribeDoc();
+			} else {
+				// User is signed out; reset state
+				setUser(null); // Clear user state
+				setUserName(""); // Clear display name
+				setPhotoURL(""); // Clear photo URL
 			}
 		});
-		// Clean up subscription on unmount
+
+		// Clean up the authentication listener when the component unmounts
 		return () => unsubscribe();
-	}, [router]);
+	}, []); // Empty dependency array means this effect runs once on mount
 
 	const handleLogout = async () => {
 		try {
 			await signOut(auth);
 			setUser(null);
+			setUserName("");
+			setPhotoURL("");
 			toast.success("You have been signed out.");
 			router.push("/");
 		} catch (error) {
@@ -234,7 +248,7 @@ function Header() {
 
 						{!user ? (
 							<button
-								className="w-[35px] h-[35px] rounded-full flex items-center justify-center shrink-0 hover:text-[#B47B2B] focus:ring-1 focus:ring-[#B47B2B] duration-200 cursor-pointer outline-none border-none"
+								className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 hover:text-[#B47B2B] focus:ring-1 focus:ring-[#B47B2B] duration-200 cursor-pointer outline-none border-none"
 								onClick={() => router.push("/sign-in")}
 							>
 								<CircleUserRound className="w-full h-full" />
@@ -242,21 +256,15 @@ function Header() {
 						) : (
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
-									{photoURL ? (
+									{user && (
 										<Avatar
 											onClick={closeMenu}
 											className="w-12 h-12 rounded-full shrink-0 focus:ring-1 focus:ring-[#B47B2B] duration-200 cursor-pointer"
 										>
 											<AvatarImage
-												src={photoURL}
+												src={user?.photoURL || photoURL}
 												alt={"User profile picture"}
 											/>
-										</Avatar>
-									) : (
-										<Avatar
-											onClick={closeMenu}
-											className="w-12 h-12 rounded-full shrink-0 focus:ring-1 focus:ring-[#B47B2B] duration-200 cursor-pointer"
-										>
 											<AvatarFallback className="font-libre-franklin tracking-wide">
 												<UserRoundCheck size={24} />
 											</AvatarFallback>
@@ -267,21 +275,15 @@ function Header() {
 									<DropdownMenuLabel>
 										<div className="flex items-center gap-2 px-2 pt-4 pb-3">
 											{/* profile picture */}
-											{photoURL ? (
+											{user && (
 												<Avatar
 													onClick={closeMenu}
 													className="w-12 h-12 shrink-0"
 												>
 													<AvatarImage
-														src={photoURL}
+														src={user?.photoURL || photoURL}
 														alt={"User profile picture"}
 													/>
-												</Avatar>
-											) : (
-												<Avatar
-													onClick={closeMenu}
-													className="w-12 h-12 rounded-full shrink-0"
-												>
 													<AvatarFallback className="font-libre-franklin tracking-wide">
 														<UserRoundCheck size={24} />
 													</AvatarFallback>
@@ -289,18 +291,16 @@ function Header() {
 											)}
 
 											{/* Name and email */}
-											<div className="flex-1 shrink-0">
-												{userName && (
+											{user && (
+												<div className="flex-1 shrink-0">
 													<h1 className="font-open-sans font-semibold text-[15px] lg:text-base text-black dark:text-white">
-														{userName}
+														{user.displayName || userName}
 													</h1>
-												)}
-												{email && (
 													<p className="font-open-sans font-normal text-sm lg:text-[15px] text-black dark:text-gray-300">
-														{email}
+														{user?.email}
 													</p>
-												)}
-											</div>
+												</div>
+											)}
 										</div>
 									</DropdownMenuLabel>
 									<hr />

@@ -48,7 +48,7 @@ export const deleteUserFromFirestore = async (
     }
   } catch (error) {
     if (error instanceof FirebaseError) {
-      toast.error(error.message); // Use toast error instead of toast message
+      toast.error(error.message);
     }
   } finally {
     setIsLoading(false);

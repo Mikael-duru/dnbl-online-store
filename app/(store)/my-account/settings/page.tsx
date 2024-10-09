@@ -145,7 +145,7 @@ function Settings() {
 								</button>
 							</div>
 							<Modal open={open} setOpen={setOpen}>
-								<ConfirmDeleteUser />
+								<ConfirmDeleteUser setOpen={setOpen} />
 							</Modal>
 						</div>
 					</div>

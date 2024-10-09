@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import useWishlistStore from "@/lib/hook/useWishlist";
 import { auth } from "@/firebase/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { store } from "@/lib/store";
+import type { User } from "firebase/auth";
 
 interface HeartFavoriteProps {
 	product: ProductType;
@@ -14,8 +14,20 @@ const HeartFavorite = ({ product }: HeartFavoriteProps) => {
 	const { wishlistItems, addToWishlist, removeFromWishlist } =
 		useWishlistStore();
 	const [isLiked, setIsLiked] = useState(false);
-	const { currentUser, getUserInfo } = store();
 	const router = useRouter();
+	const [user, setUser] = useState<User | null>(null);
+
+	// Check authentication state
+	useEffect(() => {
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
+			if (user) {
+				setUser(user);
+			} else {
+				setUser(null);
+			}
+		});
+		return () => unsubscribe(); // Cleanup subscription
+	}, []);
 
 	// Check if the product is in the wishlist when the component mounts
 	useEffect(() => {
@@ -24,9 +36,6 @@ const HeartFavorite = ({ product }: HeartFavoriteProps) => {
 		);
 		setIsLiked(isProductInWishlist);
 	}, [wishlistItems, product._id]);
-
-	// Check authentication state
-	const user = auth.currentUser;
 
 	const handleLike = () => {
 		if (!user) {

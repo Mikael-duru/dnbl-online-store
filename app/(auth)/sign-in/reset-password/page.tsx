@@ -1,21 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import ButtonPrimary from "@/components/ButtonPrimary";
 import Modal from "@/components/Modal";
-import { useRouter } from "next/navigation";
+import { confirmPasswordReset } from "firebase/auth";
+import { auth } from "@/firebase/firebase";
+import Loader from "@/components/Loader";
 
 function NewPassword() {
+	const [isLoading, setIsLoading] = useState(true);
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 	const [errors, setErrors] = useState({ password: "", confirmPassword: "" });
+	const [errMsg, setErrMsg] = useState("");
 	const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
 	const router = useRouter();
+	const searchParams = useSearchParams();
+
+	// const mode = searchParams.get("mode");
+	const code = searchParams.get("oobCode");
+
+	useEffect(() => {
+		setIsLoading(false);
+	}, []);
 
 	// Validate Password
 	const validatePassword = (password: string) => {
@@ -50,7 +63,7 @@ function NewPassword() {
 		}));
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
 		const newErrors = {
@@ -64,10 +77,37 @@ function NewPassword() {
 		setErrors(newErrors);
 
 		if (!newErrors.password && !newErrors.confirmPassword) {
-			// Submit form
-			console.log("Form submitted");
-			setIsModalOpen(true); // Open modal upon successful submission
+			if (!code) {
+				setErrMsg("Invalid password reset link.");
+				return;
+			}
+			try {
+				await confirmPasswordReset(auth, code, password);
+				setIsModalOpen(true);
+			} catch (error) {
+				const errorMessage = handleFirebaseError(error);
+				console.log("Reset Error", error);
+				setErrMsg(errorMessage);
+			}
 		}
+	};
+
+	const handleFirebaseError = (error: unknown): string => {
+		if (error instanceof Error && "code" in error) {
+			switch (error.code) {
+				case "auth/invalid-action-code":
+					return "This link is invalid or has expired.";
+				case "auth/expired-action-code":
+					return "This link has expired. Please request a new password reset.";
+				case "auth/weak-password":
+					return "Password should be at least 6 characters.";
+				case "auth/missing-password":
+					return "Please enter a password.";
+				default:
+					return "An error occurred. Please try again.";
+			}
+		}
+		return "An unknown error occurred.";
 	};
 
 	const handleModalClose = () => {
@@ -76,16 +116,21 @@ function NewPassword() {
 		router.push("/sign-in");
 	};
 
+	if (isLoading) {
+		return <Loader />;
+	}
+
 	return (
-		<section className="flex min-h-screen items-center justify-center bg-white shrink-0">
-			<div className="flex flex-col lg:flex-row gap-8 lg:gap-10 xl:gap-[133px] w-full justify-center items-center xl:justify-start bg-white sm:p-5">
-				<div className="max-lg:hidden relative rounded-3xl overflow-hidden max-w-full md:max-w-[50%] lg:max-w-[50%]">
+		<section className="flex min-h-screen items-center justify-center bg-white max-2xl:dark:bg-[#2E2E2E]">
+			<div className="flex flex-col lg:flex-row gap-5 lg:gap-10 xl:gap-[133px] w-full justify-center items-center xl:justify-start bg-white dark:bg-[#2E2E2E] px-[5%] sm:p-5 overflow-hidden">
+				{/* Image Container */}
+				<div className="relative rounded-3xl max-h-screen overflow-hidden max-w-full md:max-w-[50%] lg:max-w-[50%] max-lg:mt-5">
 					<Image
 						src="/assets/signIn-banner.png"
 						alt="DNBL Fashion"
 						width={700}
 						height={984}
-						className="max-w-full w-auto object-cover bg-blend-multiply"
+						className="max-w-full h-[65vh] sm:h-[80vh] object-cover lg:h-auto" // Set height for mobile and auto for larger screens
 					/>
 					<div className="absolute inset-0 bg-sign-in-layer"></div>
 					<Image
@@ -107,7 +152,7 @@ function NewPassword() {
 						<div className="mb-6">
 							<label
 								htmlFor="password"
-								className="block text-sm md:text-base lg:text-lg font-medium text-gray-700 mb-1"
+								className="block text-sm md:text-base lg:text-lg font-medium text-gray-700 dark:text-white mb-1"
 							>
 								New Password
 							</label>
@@ -117,7 +162,7 @@ function NewPassword() {
 									id="password"
 									className={`w-full p-4 border ${
 										errors.password ? "border-error" : "border-gold-border"
-									} rounded-md text-[#101928] placeholder:text-[#98A2B3] text-[14px] leading-[20.3px] focus:outline-none focus:ring-1 focus:ring-[#B47B2B]`}
+									} rounded-md text-[#101928] dark:text-white placeholder:text-[#98A2B3] dark:placeholder:text-gray-400 text-sm leading-[20.3px] focus:outline-none focus:ring-2 focus:ring-gold-border`}
 									placeholder="Enter your password"
 									value={password}
 									onChange={handlePasswordChange}
@@ -135,14 +180,16 @@ function NewPassword() {
 								</button>
 							</div>
 							{errors.password && (
-								<p className="mt-2 text-error text-sm">{errors.password}</p>
+								<p className="mt-2 text-error dark:text-red-500 text-sm">
+									{errors.password}
+								</p>
 							)}
 						</div>
 
 						<div className="mb-6">
 							<label
 								htmlFor="confirm-password"
-								className="block text-sm md:text-base lg:text-lg font-medium text-gray-700 mb-1"
+								className="block text-sm md:text-base lg:text-lg font-medium text-gray-700 dark:text-white mb-1"
 							>
 								Confirm Password
 							</label>
@@ -154,7 +201,7 @@ function NewPassword() {
 										errors.confirmPassword
 											? "border-error"
 											: "border-gold-border"
-									} rounded-md text-[#101928] placeholder:text-[#98A2B3] text-[14px] leading-[20.3px] focus:outline-none focus:ring-1 focus:ring-[#B47B2B]`}
+									} rounded-md text-[#101928] dark:text-white placeholder:text-[#98A2B3] dark:placeholder:text-gray-400 text-sm leading-[20.3px] focus:outline-none focus:ring-2 focus:ring-gold-border`}
 									placeholder="Confirm your password"
 									value={confirmPassword}
 									onChange={handleConfirmPasswordChange}
@@ -172,13 +219,21 @@ function NewPassword() {
 								</button>
 							</div>
 							{errors.confirmPassword && (
-								<p className="mt-2 text-error text-sm">
+								<p className="mt-2 text-error dark:text-red-500 text-sm">
 									{errors.confirmPassword}
 								</p>
 							)}
 						</div>
 
-						<ButtonPrimary type="button" label="Change Password" />
+						{errMsg && (
+							<p className="text-error dark:text-red-500 text-sm text-center">
+								{errMsg}
+							</p>
+						)}
+
+						<div className="mt-4">
+							<ButtonPrimary type="button" label="Change Password" />
+						</div>
 
 						<div className="flex items-center justify-center mt-10 lg:hidden">
 							<Image
@@ -193,7 +248,7 @@ function NewPassword() {
 					<Modal
 						isOpen={isModalOpen}
 						onClose={handleModalClose}
-						src="./assets/success-lock.svg"
+						src="/assets/success-lock.svg"
 						heading="Password reset successful"
 						paragraphText="Sign in with your new password, keep it secure, and enjoy exploring!"
 						buttonLabel="Continue to sign in"

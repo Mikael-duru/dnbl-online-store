@@ -79,15 +79,13 @@ const CheckOut: React.FC = () => {
 				`*Order Details:*\n${orderDetails}\n` +
 				`*Total:* ₦${totalRounded.toLocaleString()}\n` +
 				`\n` +
-				`I would like to complete my order processing.\n`;
+				`I would like to complete my order from your online store.\n`;
 
 			setOrderMessage(message);
 
-			const waNumber = process.env.WHATSAPP_NUMBER;
-
-			const whatsappUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(
-				message
-			)}`;
+			const whatsappUrl = `https://wa.me/${
+				process.env.NEXT_PUBLIC_WHATSAPP_NUMBER
+			}?text=${encodeURIComponent(message)}`;
 
 			window.open(whatsappUrl, "_blank", "noopener,noreferrer");
 		} catch (error) {

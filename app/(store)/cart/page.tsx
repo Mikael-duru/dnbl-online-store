@@ -4,17 +4,16 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-// import toast from "react-hot-toast"; // Uncomment if using toast notifications
+import type { User } from "firebase/auth";
 
 import useCart from "@/lib/hook/useCart";
 import ButtonSecondary from "@/components/ButtonSecondary";
 import Loader from "@/components/Loader";
 import CustomDropdown from "@/components/CustomDropdown";
 import { auth } from "@/firebase/firebase";
-import { onAuthStateChanged } from "firebase/auth";
-import { store } from "@/lib/store";
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import RecentlyViewed from "@/components/RecentlyViewedProducts";
+import { onAuthStateChanged } from "firebase/auth";
 
 const countriesOptions = [
 	{ value: "US", label: "USA" },
@@ -23,15 +22,24 @@ const countriesOptions = [
 ];
 
 const Cart = () => {
+	const [user, setUser] = useState<User | null>(null);
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(true);
 	const cart = useCart();
 	const [country, setCountry] = useState<string>("");
 	const [errors, setErrors] = useState<{ country?: string }>({});
-	const { currentUser, getUserInfo } = store();
+	// const user = auth.currentUser;
 
 	useEffect(() => {
-		setIsLoading(false);
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
+			if (user) {
+				setUser(user);
+			} else {
+				setUser(null);
+			}
+			setIsLoading(false); // Stop loading
+		});
+		return () => unsubscribe(); // Cleanup subscription
 	}, []);
 
 	const total = cart?.cartItems?.reduce(
@@ -39,20 +47,6 @@ const Cart = () => {
 		0
 	);
 	const totalRounded = parseFloat(total.toFixed(2));
-
-	// Check authentication state
-	// useEffect(() => {
-	// 	const unSub = onAuthStateChanged(auth, (user) => {
-	// 		if (user) {
-	// 			getUserInfo(user?.uid);
-	// 		}
-	// 	});
-	// 	return () => {
-	// 		unSub();
-	// 	};
-	// }, [getUserInfo]);
-
-	const user = auth.currentUser;
 
 	const handleCheckout = async () => {
 		// Check if user is signed in
@@ -215,7 +209,7 @@ const Cart = () => {
 					<hr className="mb-4" />
 					<form action="">
 						{/* Country */}
-						<div className="flex flex-col gap-1 mb-4">
+						<div className="flex flex-col gap-1 mb-2">
 							<h2 className="font-open-sans text-base font-medium text-black dark:text-white">
 								Country
 							</h2>
@@ -225,14 +219,15 @@ const Cart = () => {
 									selectedOption={country}
 									onChange={setCountry}
 								/>
-								{errors.country && (
-									<p className="text-red-600 mt-1">{errors.country}</p>
-								)}
 							</div>
 						</div>
 					</form>
 
-					<div className="w-[200px] sm:w-[250px] mx-auto">
+					{errors.country && (
+						<p className="text-red-500 text-center">{errors.country}</p>
+					)}
+
+					<div className="w-[200px] sm:w-[250px] mx-auto mt-2">
 						<ButtonSecondary
 							type="button"
 							label="Proceed to Checkout"

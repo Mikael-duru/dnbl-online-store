@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Mail } from "lucide-react";
 import Link from "next/link";
@@ -8,16 +8,13 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "@/firebase/firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 
 import Button from "./Button";
-import AlertCard from "./AlertCard";
 import SignInWithGoogle from "./SignInWithGoogle";
 import SignInWithFacebook from "./SignInWithFacebook";
 
 export default function LoginForm() {
-	const [userId, setUserId] = useState("");
-	const [isEmailVerified, setIsEmailVerified] = useState<string>("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
@@ -26,17 +23,7 @@ export default function LoginForm() {
 	const [errMsg, setErrMsg] = useState("");
 	const router = useRouter();
 
-	useEffect(() => {
-		// Retrieve the stored user data from session storage
-		const storedUserId = sessionStorage.getItem("registrationData");
-		if (storedUserId) {
-			setUserId(storedUserId);
-		}
-	}, [router]);
-
-	const validateEmail = (email: string) => {
-		return /\S+@\S+\.\S+/.test(email);
-	};
+	const validateEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
 
 	const validatePassword = (password: string) => {
 		if (password.length < 6) return "Password must be at least 6 characters";
@@ -86,22 +73,29 @@ export default function LoginForm() {
 		if (!newErrors.email && !newErrors.password) {
 			try {
 				setLoading(true);
+				// Authenticate user
+				const userCredential = await signInWithEmailAndPassword(
+					auth,
+					email,
+					password
+				);
+				const user = userCredential.user;
 
-				await signInWithEmailAndPassword(auth, email, password);
-
-				const userDoc = await getDoc(doc(db, "users", userId));
+				// Fetch user document to check email verification
+				const userDoc = await getDoc(doc(db, "users", user.uid));
 				if (userDoc.exists()) {
 					const userData = userDoc.data();
-					setIsEmailVerified(userData.isEmailVerified);
-				}
 
-				if (isEmailVerified) {
-					console.log(isEmailVerified);
-					router.push("/");
-					toast.success("User logged in successfully");
-					sessionStorage.removeItem("user.uid");
+					// Navigate based on email verification status
+					if (userData.isEmailVerified) {
+						router.push("/");
+						toast.success("User logged in successfully");
+						sessionStorage.removeItem("user.uid");
+					} else {
+						setErrMsg("Please verify your email before logging in.");
+					}
 				} else {
-					setErrMsg("Please verify your email before logging in.");
+					setErrMsg("User data not found.");
 				}
 			} catch (error: any) {
 				let errorMessage;
@@ -123,7 +117,7 @@ export default function LoginForm() {
 						errorMessage = "An error occurred. Please try again.";
 				}
 				console.log("Error", error);
-				toast.error(errorMessage);
+				setErrMsg(errorMessage);
 			} finally {
 				setLoading(false);
 			}
@@ -213,7 +207,11 @@ export default function LoginForm() {
 					</Link>
 				</div>
 
-				{errMsg && <AlertCard alert={errMsg} />}
+				{errMsg && (
+					<p className="text-center text-error dark:text-red-500 text-sm">
+						{errMsg}
+					</p>
+				)}
 
 				<div className="pt-4">
 					{/* Submit form */}
