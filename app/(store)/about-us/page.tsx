@@ -39,13 +39,13 @@ function AboutUs() {
 	return (
 		<main className="bg-white dark:bg-[#1E1E1E]">
 			{/* Banner */}
-			<section className="relative">
+			<section className="relative dark:border-b-2 dark:border-b-dark-brown">
 				<Image
 					src="/assets/About-banner.png"
 					alt="About Us Banner"
 					width={1440}
 					height={429}
-					className="object-cover"
+					className="w-auto h-auto object-cover"
 				/>
 				<div className="absolute inset-0 bg-banner-layer w-full h-full z-10"></div>
 

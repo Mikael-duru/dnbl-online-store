@@ -115,8 +115,8 @@ const FeaturedProducts = () => {
 			{/* Regular display for small screens */}
 			<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:hidden">
 				{featuredProducts.map((product, index) => (
-					<div className="relative w-[210px] h-[320px] mx-auto">
-						<div key={index} className="relative">
+					<div key={index} className="relative w-[210px] h-[320px] mx-auto">
+						<div className="relative">
 							<Image
 								src={product.media[0]}
 								alt={product.productName}

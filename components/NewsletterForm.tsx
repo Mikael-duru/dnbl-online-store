@@ -86,6 +86,7 @@ const NewsletterForm = () => {
 						alt="Submit"
 						width={24}
 						height={24}
+						className="w-auto h-auto"
 					/>
 				</button>
 			</form>

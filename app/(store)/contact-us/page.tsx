@@ -67,13 +67,13 @@ function ContactUs() {
 
 	return (
 		<main className="bg-white dark:bg-[#1E1E1E]">
-			<section className="relative">
+			<section className="relative dark:border-b-2 dark:border-b-dark-brown">
 				<Image
 					src="/assets/contact-us-banner.png"
 					alt="Contact Us Banner"
 					width={1440}
 					height={500}
-					className="object-cover"
+					className="w-auto h-auto object-cover"
 				/>
 				<div className="absolute inset-0 bg-banner-layer w-full h-full z-10"></div>
 				<h1 className="absolute top-1/2 left-1/2 -translate-x-1/2 z-20 text-white font-open-sans font-bold text-[28px] leading-[1px] sm:text-6xl sm:leading-[1px] lg:text-7xl xl:text-8xl xl:leading-[28px]">

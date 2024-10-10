@@ -26,7 +26,7 @@ export default function Home() {
 					alt="Home Banner"
 					width={1440}
 					height={721}
-					className="object-cover"
+					className="w-auto h-auto object-cover"
 				/>
 				<div className="absolute inset-0 bg-banner-layer flex flex-col items-center justify-center">
 					<div className="w-[320px] xs:w-[400px] sm:w-[630px] lg:w-[921px] text-center">
@@ -79,7 +79,7 @@ export default function Home() {
 								width={32}
 								height={32}
 								alt=""
-								className="mx-auto"
+								className="w-auto h-auto mx-auto"
 							/>
 							<p className="dark:text-white pt-2 text-black font-work-sans text-xl sm:text-2xl font-semibold leading-normal tracking-[-0.48px]">
 								{text}
@@ -133,9 +133,8 @@ export default function Home() {
 									key={idx}
 									src={src}
 									alt={`Nigerian fashion model ${idx + 1}`}
-									width={200}
-									height={200}
-									objectFit="cover"
+									width={500}
+									height={500}
 									className={`rounded-[50%] ${
 										idx === 0
 											? "max-xl:hidden absolute top-0 left-0"
@@ -215,8 +214,7 @@ export default function Home() {
 						alt="Decorative yellow rectangle"
 						width={294}
 						height={445}
-						objectFit="cover"
-						className="w-auto h-auto"
+						className="w-auto h-auto object-cover"
 					/>
 				</div>
 				<div className="absolute bottom-[210px] right-0 2xl:bottom-[150px] 2xl:right-[55px] max-sm:hidden">
@@ -225,8 +223,7 @@ export default function Home() {
 						alt="Decorative yellow bullets"
 						width={272}
 						height={168}
-						objectFit="cover"
-						className="w-auto h-auto"
+						className="w-auto h-auto object-cover"
 					/>
 				</div>
 			</section>

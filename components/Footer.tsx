@@ -35,6 +35,7 @@ function Footer() {
 							width={138}
 							height={60}
 							alt="DNBL logo"
+							className="w-auto h-auto"
 						/>
 					</Link>
 

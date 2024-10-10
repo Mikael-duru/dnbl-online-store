@@ -18,7 +18,13 @@ const Feature: React.FC<FeatureProps> = ({
 }) => (
 	<div className="flex flex-col items-center px-2 py-[39px] bg-white dark:bg-[#2E2E2E] rounded-lg shadow-incentives-shadow sm:w-[312px]">
 		<div className="mb-4">
-			<Image src={iconUrl} width={iconWidth} height={iconHeight} alt="" />
+			<Image
+				src={iconUrl}
+				width={iconWidth}
+				height={iconHeight}
+				alt=""
+				className="w-auto h-auto"
+			/>
 		</div>
 		<h3 className="font-open-sans font-semibold text-2xl leading-[40px] text-blue-black dark:text-white mb-4">
 			{title}
@@ -77,10 +83,9 @@ const WhyChooseUs: React.FC = () => {
 					<Image
 						src="/assets/happy-customer.jpeg"
 						alt="Happy customer"
-						width={514}
-						height={514}
-						objectFit="cover"
-						className="w-full object-cover rounded-full z-10"
+						width={700}
+						height={700}
+						className="w-full h-auto object-cover rounded-full z-10"
 					/>
 				</div>
 			</div>
