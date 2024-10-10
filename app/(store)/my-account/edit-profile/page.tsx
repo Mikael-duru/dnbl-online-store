@@ -14,6 +14,7 @@ import { auth, db } from "@/firebase/firebase";
 import { getDoc, doc, updateDoc } from "firebase/firestore";
 import uploadFile from "@/lib/upload";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import toast from "react-hot-toast";
 
 function EditProfile() {
 	const [user, setUser] = useState<User | null>(null);
@@ -123,6 +124,8 @@ function EditProfile() {
 				if (Object.keys(updates).length > 0) {
 					await updateDoc(doc(db, "users", user.uid), updates);
 					console.log("User data updated successfully");
+
+					toast.success("Profile updated successfully!");
 
 					// Clear the form fields
 					setFormData({

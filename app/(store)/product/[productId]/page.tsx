@@ -106,7 +106,6 @@ const ProductDetail = () => {
 									: review
 							);
 
-							// Sync updated reviews with localStorage
 							localStorage.setItem(
 								`reviews-${productId}`,
 								JSON.stringify(updatedReviews)
@@ -129,7 +128,7 @@ const ProductDetail = () => {
 		});
 
 		return () => unsubscribe();
-	}, []);
+	}, [reviews]);
 
 	const searchParams = useSearchParams();
 	const productId = searchParams.get("id");

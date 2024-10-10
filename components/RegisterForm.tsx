@@ -158,7 +158,7 @@ export default function RegisterForm() {
 				sessionStorage.setItem("userId", user.uid);
 				sessionStorage.setItem("UserEmail", email);
 				sessionStorage.setItem("userFirstName", firstName);
-				console.log(user.uid);
+				// console.log(user.uid);
 
 				// Temporary store user data in local storage
 				localStorage.setItem(
@@ -169,34 +169,34 @@ export default function RegisterForm() {
 				);
 
 				try {
-					console.log("Sending request to /api/send");
-					console.log("otp:", otp);
-					console.log("email:", email);
-					console.log("firstName:", firstName);
+					// console.log("Sending request to /api/send");
+					// console.log("otp:", otp);
+					// console.log("email:", email);
+					// console.log("firstName:", firstName);
 					const response = await fetch("/api/send", {
 						method: "POST",
 						headers: { "Content-Type": "application/json" },
 						body: JSON.stringify({ firstName, email, otp }),
 					});
 
-					console.log("Response status:", response.status);
-					console.log("Response headers:", response.headers);
+					// console.log("Response status:", response.status);
+					// console.log("Response headers:", response.headers);
 
 					const responseData = await response.json();
-					console.log("Register response data:", responseData);
+					// console.log("Register response data:", responseData);
 
 					if (response.ok) {
 						toast.success(
 							"Account created successfully! \n Please verify your email."
 						);
-						console.log("Account created successfully, OTP sent via email");
+						// console.log("Account created successfully, OTP sent via email");
 					} else {
 						toast.error(`Failed to send OTP: ${responseData.error}`);
-						console.error("Failed to send Register OTP:", responseData.error);
+						// console.error("Failed to send Register OTP:", responseData.error);
 					}
 				} catch (error) {
 					toast.error("An error occurred while sending OTP");
-					console.error("Error sending Register OTP:", error);
+					// console.error("Error sending Register OTP:", error);
 				}
 
 				// Clear form fields
@@ -224,7 +224,7 @@ export default function RegisterForm() {
 					default:
 						errorMessage = "An error occurred. Please try again.";
 				}
-				console.log("Error", error);
+				// console.log("Error", error);
 				toast.error(errorMessage);
 			} finally {
 				setLoading(false);

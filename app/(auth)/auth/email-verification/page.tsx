@@ -114,7 +114,7 @@ function OTPVerification() {
 
 	useEffect(() => {
 		const storedUserId = sessionStorage.getItem("userId");
-		console.log("storedUserId:", storedUserId);
+		// console.log("storedUserId:", storedUserId);
 		if (!storedUserId) {
 			router.push("/sign-up");
 		} else {
@@ -139,7 +139,7 @@ function OTPVerification() {
 		};
 
 		confirmUserData();
-	}, []);
+	}, [userId]);
 
 	if (!userId) {
 		return <Loader />;
@@ -179,7 +179,7 @@ function OTPVerification() {
 			}
 		} catch (err) {
 			setError("Error verifying OTP. Please try again.");
-			console.error("OTP Verification error: ", err);
+			// console.error("OTP Verification error: ", err);
 		}
 	};
 
@@ -204,21 +204,21 @@ function OTPVerification() {
 				otpExpiredAt: otpExpiredAt,
 			});
 
-			console.log("Sending request to /api/send");
-			console.log("new otp:", otp);
-			console.log("email:", email);
-			console.log("firstName:", firstName);
+			// console.log("Sending request to /api/send");
+			// console.log("new otp:", otp);
+			// console.log("email:", email);
+			// console.log("firstName:", firstName);
 			const response = await fetch("/api/send", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ firstName, email, otp }),
 			});
 
-			console.log("Response status:", response.status);
-			console.log("Response headers:", response.headers);
+			// console.log("Response status:", response.status);
+			// console.log("Response headers:", response.headers);
 
 			const responseData = await response.json();
-			console.log("Response data:", responseData);
+			// console.log("Response data:", responseData);
 
 			if (response.ok) {
 				// Increment the resend attempts
@@ -230,16 +230,16 @@ function OTPVerification() {
 				const startTime = Date.now();
 				sessionStorage.setItem("startTime", JSON.stringify(startTime));
 				toast.success(
-					"OTP resent successfully! \n Check your email for the verification code."
+					"OTP resent successfully! \n Check your email for the code."
 				);
-				console.log("OTP resent successful, OTP sent via email");
+				// console.log("OTP resent successful, OTP sent via email");
 			} else {
 				toast.error(`Failed to send OTP: ${responseData.error}`);
-				console.error("Failed to send OTP:", responseData.error);
+				// console.error("Failed to send OTP:", responseData.error);
 			}
 		} catch (error) {
 			toast.error("An error occurred while sending OTP");
-			console.error("Error sending OTP:", error);
+			// console.error("Error sending OTP:", error);
 		}
 	};
 
