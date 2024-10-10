@@ -187,9 +187,9 @@ export default function RegisterForm() {
 
 					if (response.ok) {
 						toast.success(
-							"User registered successfully! \n Please verify your email."
+							"Account created successfully! \n Please verify your email."
 						);
-						console.log("User registered successfully, OTP sent via email");
+						console.log("Account created successfully, OTP sent via email");
 					} else {
 						toast.error(`Failed to send OTP: ${responseData.error}`);
 						console.error("Failed to send Register OTP:", responseData.error);

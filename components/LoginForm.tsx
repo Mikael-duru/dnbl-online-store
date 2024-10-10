@@ -89,7 +89,7 @@ export default function LoginForm() {
 					// Navigate based on email verification status
 					if (userData.isEmailVerified) {
 						router.push("/");
-						toast.success("User logged in successfully");
+						toast.success(`Welcome ${userData.firstName}!`);
 						sessionStorage.removeItem("user.uid");
 					} else {
 						setErrMsg("Please verify your email before logging in.");
