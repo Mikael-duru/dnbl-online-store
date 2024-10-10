@@ -34,7 +34,7 @@ function SizeChart() {
 
 	return (
 		<div className="fixed inset-0 bg-banner-layer flex justify-center items-center z-50">
-			<div className="bg-gray-100 py-6 px-4 rounded-lg mx-4">
+			<div className="bg-gray-100 dark:bg-[#2E2E2E] py-6 px-4 rounded-lg mx-4">
 				<Carousel>
 					<CarouselContent className="flex gap-2 sm:gap-4 lg:gap-5">
 						{imageUrls.map((imageUrl) => (

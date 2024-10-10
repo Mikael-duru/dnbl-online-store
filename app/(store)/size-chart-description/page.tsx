@@ -86,7 +86,7 @@ const SizeChartDescription: React.FC = () => {
 
 	// Function to go back to the previous page
 	const handleBack = () => {
-		if (router && router.back) {
+		if (router) {
 			router.back(); // Go back to the page from which the user clicked "View More"
 		}
 	};
@@ -105,6 +105,46 @@ const SizeChartDescription: React.FC = () => {
 				</p>
 
 				{/* Size chart images */}
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-4 pt-4 mb-11 xl:mb-14">
+					<div className="text-center">
+						<h2 className="font-open-sans font-semibold text-black dark:text-[#fdae3f] text-lg mb-2">
+							Men&apos;s Shirt Chart
+						</h2>
+						<Image
+							src="/assets/men-shirt-chart.jpg"
+							width={1080}
+							height={1920}
+							alt="Men's Shirt Chart"
+							className="mx-auto w-[374px] h-[600px] lg:h-[530px] xl:h-[680px]"
+						/>
+					</div>
+					<div className="text-center">
+						<h2 className="font-open-sans font-semibold text-black dark:text-[#fdae3f] text-lg mb-2">
+							Men&apos;s Trouser Chart
+						</h2>
+						<Image
+							src="/assets/men-trousers-sizes.jpg"
+							width={1080}
+							height={1920}
+							alt="Men's Trouser Size Chart"
+							className="mx-auto w-[374px] h-[600px] lg:h-[530px] xl:h-[680px]"
+						/>
+					</div>
+					<div className="text-center">
+						<h2 className="font-open-sans font-semibold text-black dark:text-[#fdae3f] text-lg mb-2">
+							Women&apos;s Chart
+						</h2>
+						<Image
+							src="/assets/women-size-chart.jpg"
+							width={1080}
+							height={1920}
+							alt="Women's Size Chart"
+							className="mx-auto w-[374px] h-[600px] lg:h-[530px] xl:h-[680px]"
+						/>
+					</div>
+				</div>
+
+				{/* Measurement images */}
 				<div className="flex items-center justify-center flex-col gap-14 mb-16">
 					<div className="text-center">
 						<h2 className="font-open-sans font-semibold text-black dark:text-[#fdae3f] text-xl mb-2">

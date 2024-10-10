@@ -44,43 +44,92 @@ const ProductDetail = () => {
 	const [reviews, setReviews] = useState<Review[]>([]);
 	const [errors, setErrors] = useState<Partial<Review>>({});
 
+	// useEffect(() => {
+	// 	// Set up an authentication state listener
+	// 	const unsubscribe = onAuthStateChanged(auth, (user) => {
+	// 		if (user) {
+	// 			// User is signed in; update user state
+	// 			setUser(user);
+
+	// 			// Reference to the user's document in Firestore
+	// 			const userDocRef = doc(db, "users", user.uid);
+
+	// 			// Listen for real-time updates to the user's document in Firestore
+	// 			const unsubscribeDoc = onSnapshot(userDocRef, (doc) => {
+	// 				if (doc.exists()) {
+	// 					// Update local state with user data from Firestore
+	// 					const userData = doc.data();
+	// 					setUserName(userData.displayName || ""); // Default to empty if not available
+	// 					setPhotoURL(userData.photoURL || ""); // Default to empty if not available
+	// 				} else {
+	// 					console.error("User document does not exist."); // Log error if document is missing
+	// 				}
+	// 			});
+
+	// 			// Clean up the Firestore listener when the component unmounts
+	// 			return () => {
+	// 				unsubscribeDoc(); // Unsubscribe from the Firestore listener
+	// 			};
+	// 		} else {
+	// 			// User is signed out; reset state
+	// 			setUser(null); // Clear user state
+	// 			setUserName(""); // Clear display name
+	// 			setPhotoURL(""); // Clear photo URL
+	// 		}
+	// 	});
+
+	// 	// Clean up the authentication listener when the component unmounts
+	// 	return () => unsubscribe();
+	// }, []); // Empty dependency array means this effect runs once on mount
+
 	useEffect(() => {
-		// Set up an authentication state listener
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
 			if (user) {
-				// User is signed in; update user state
 				setUser(user);
-
-				// Reference to the user's document in Firestore
 				const userDocRef = doc(db, "users", user.uid);
 
-				// Listen for real-time updates to the user's document in Firestore
 				const unsubscribeDoc = onSnapshot(userDocRef, (doc) => {
 					if (doc.exists()) {
-						// Update local state with user data from Firestore
 						const userData = doc.data();
-						setUserName(userData.displayName || ""); // Default to empty if not available
-						setPhotoURL(userData.photoURL || ""); // Default to empty if not available
+						const newUserName = userData.displayName || "";
+						const newPhotoURL = userData.photoURL || "";
+
+						// Update user state
+						setUserName(newUserName);
+						setPhotoURL(newPhotoURL);
+
+						// Update existing reviews if they match previous user info
+						setReviews((prevReviews) => {
+							const updatedReviews = prevReviews.map((review) =>
+								review.name === userName
+									? { ...review, name: newUserName, ImageUrl: newPhotoURL }
+									: review
+							);
+
+							// Sync updated reviews with localStorage
+							localStorage.setItem(
+								`reviews-${productId}`,
+								JSON.stringify(updatedReviews)
+							);
+							return updatedReviews;
+						});
 					} else {
-						console.error("User document does not exist."); // Log error if document is missing
+						console.error("User document does not exist.");
 					}
 				});
 
-				// Clean up the Firestore listener when the component unmounts
 				return () => {
-					unsubscribeDoc(); // Unsubscribe from the Firestore listener
+					unsubscribeDoc();
 				};
 			} else {
-				// User is signed out; reset state
-				setUser(null); // Clear user state
-				setUserName(""); // Clear display name
-				setPhotoURL(""); // Clear photo URL
+				setUser(null);
+				setUserName("");
+				setPhotoURL("");
 			}
 		});
 
-		// Clean up the authentication listener when the component unmounts
 		return () => unsubscribe();
-	}, []); // Empty dependency array means this effect runs once on mount
+	}, []);
 
 	const searchParams = useSearchParams();
 	const productId = searchParams.get("id");
@@ -198,7 +247,7 @@ const ProductDetail = () => {
 	};
 
 	const handleBack = () => {
-		if (router && router.back) {
+		if (router) {
 			router.back();
 		}
 	};
@@ -236,39 +285,39 @@ const ProductDetail = () => {
 				{reviews?.length > 0 ? (
 					reviews.slice(0, 6).map((review, index) => (
 						<div key={index} className="mb-8">
-							<div className="mb-[22px] flex sm:items-center gap-4">
-								{user?.photoURL || review?.ImageUrl ? (
-									<Avatar className="w-12 h-12 shrink-0">
-										<AvatarImage
-											src={user?.photoURL || review?.ImageUrl}
-											alt={"User profile picture"}
-										/>
-									</Avatar>
-								) : (
-									<Avatar className="w-12 h-12 shrink-0">
-										<AvatarFallback className="text-2xl font-libre-franklin tracking-wide">
-											<UserRoundCheck size={24} />
-										</AvatarFallback>
-									</Avatar>
-								)}
-								<div className="flex-1 flex max-sm:flex-col gap-3 justify-between items-start flex-wrap">
+							<div className="mb-4 sm:mb-[22px] flex sm:items-center gap-4">
+								<Avatar className="w-12 h-12 shrink-0">
+									<AvatarImage
+										src={review?.ImageUrl}
+										alt={"User profile picture"}
+									/>
+									<AvatarFallback className="text-2xl font-libre-franklin tracking-wide">
+										<UserRoundCheck size={24} />
+									</AvatarFallback>
+								</Avatar>
+								<div className="flex-1 flex max-sm:flex-col gap-1 sm:gap-3 justify-between items-start flex-wrap">
 									<div>
-										<h2 className="font-open-sans font-semibold text-xl leading-[27.24px] tracking-[-0.02em] text-figure-text mb-[2px] sm:mb-1 dark:text-white">
+										<h2 className="font-open-sans font-semibold text-sm sm:text-xl sm:leading-[27.24px] text-figure-text mb-[2px] sm:mb-1 dark:text-white">
 											{review?.name}
 										</h2>
-										<p className="font-open-sans font-normal text-sm leading-[19.07px] text-figure-text tracking-[-0.02em] dark:text-white">
+										<p className="font-open-sans font-normal text-xs sm:text-sm leading-[19.07px] text-figure-text dark:text-gray-300">
 											{review?.date}
 										</p>
 									</div>
+
+									{/* Rating display */}
 									{review?.rating > 0 && (
 										<div className="flex justify-start items-center gap-[2.75px]">
 											{[...Array(5)].map((_, i) =>
 												i < review.rating ? (
-													<FaStar key={i} className="w-6 h-6 text-[#FFCE31]" />
+													<FaStar
+														key={i}
+														className="w-4 h-4 sm:w-6 sm:h-6 text-[#FFCE31]"
+													/>
 												) : (
 													<Star
 														key={i}
-														className="w-6 h-6 text-figure-text dark:text-gray-300"
+														className="w-4 h-4 sm:w-6 sm:h-6 text-figure-text dark:text-gray-300"
 													/>
 												)
 											)}
@@ -276,10 +325,10 @@ const ProductDetail = () => {
 									)}
 								</div>
 							</div>
-							<h3 className="font-open-sans font-semibold text-xl leading-[27.24px] tracking-[-0.02em] text-figure-text mb-[10px] dark:text-white">
+							<h3 className="ml-2 font-open-sans font-semibold sm:text-xl sm:leading-[27.24px] text-figure-text mb-[10px] dark:text-white">
 								{review?.reviewTitle}
 							</h3>
-							<p className="font-open-sans font-normal text-base sm:text-lg sm:leading-6 text-figure-text tracking-[-0.02em] max-w-[1175px] dark:text-white">
+							<p className="ml-2 font-open-sans font-normal sm:text-xl sm:leading-[32.68px] text-figure-text dark:text-gray-300">
 								{review?.reviewMessage}
 							</p>
 						</div>
@@ -292,7 +341,7 @@ const ProductDetail = () => {
 			</section>
 
 			<section className="bg-[#F7F7F7] dark:bg-[#2E2E2E] px-[5%] 2xl:pl-[110px] ">
-				{reviews?.length > 1 && (
+				{reviews?.length > 6 && (
 					<button
 						onClick={() => router.push(`/product/reviews?id=${productId}`)}
 						className="font-open-sans font-semibold text-base sm:text-xl leading-[27.24px] tracking-[-0.02em] text-[#106A5E] underline dark:text-[#106A5E]"

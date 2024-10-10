@@ -7,13 +7,12 @@ import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import { Star } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
+import Cookies from "js-cookie";
 
 import { getProductById } from "@/constants/productsStore";
 import Loader from "@/components/Loader";
-import { store } from "@/lib/store";
-import { auth } from "@/firebase/firebase";
-import { onAuthStateChanged } from "firebase/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Pagination from "@/components/Pagination";
 
 interface Review {
 	name: string;
@@ -24,18 +23,46 @@ interface Review {
 	reviewMessage: string;
 }
 
-const ReviewsPage = () => {
-	const { currentUser, getUserInfo } = store();
-	const router = useRouter();
-	const searchParams = useSearchParams();
-	const productId = searchParams.get("id"); // Access the product._id
+const COOKIE_NAME = "currentProductsPage";
 
+const ReviewsPage = () => {
+	const [currentPage, setCurrentPage] = useState(1);
+	const [isLoading, setIsLoading] = useState(true);
+	const [itemsPerPage, setItemsPerPage] = useState(30); // Default to 30
+	const router = useRouter();
 	const [reviews, setReviews] = useState<Review[]>([]);
 	const [averageRating, setAverageRating] = useState<number>(0);
 	const [ratingDistribution, setRatingDistribution] = useState<number[]>([
 		0, 0, 0, 0, 0,
 	]); // For 5 stars to 1 star
-	const product = getProductById(productId);
+	const searchParams = useSearchParams();
+	const productId = searchParams.get("id"); // Access the product._id
+	const product = getProductById(productId); // Get product by Id
+
+	useEffect(() => {
+		const savedPage = Cookies.get(COOKIE_NAME);
+		if (savedPage) {
+			setCurrentPage(parseInt(savedPage, 10));
+		}
+		setIsLoading(false);
+	}, []);
+
+	useEffect(() => {
+		if (!isLoading) {
+			Cookies.set(COOKIE_NAME, currentPage.toString(), { expires: 7 });
+		}
+	}, [currentPage, isLoading]);
+
+	useEffect(() => {
+		const updateItemsPerPage = () => {
+			setItemsPerPage(window.innerWidth < 768 ? 10 : 30); // 768px as a breakpoint
+		};
+
+		updateItemsPerPage(); // Set initial value
+		window.addEventListener("resize", updateItemsPerPage); // Update on resize
+
+		return () => window.removeEventListener("resize", updateItemsPerPage); // Cleanup
+	}, []);
 
 	// Load reviews from localStorage on component mount
 	useEffect(() => {
@@ -46,17 +73,20 @@ const ReviewsPage = () => {
 			calculateAverageRating(parsedReviews);
 			calculateRatingDistribution(parsedReviews);
 		}
-
-		const unSub = onAuthStateChanged(auth, (user) => {
-			if (user) {
-				getUserInfo(user?.uid);
-			}
-			// setIsAuthenticated(!!user); // Set authentication status
-		});
-		return () => {
-			unSub();
-		};
 	}, [productId]);
+
+	// Calculate total pages based on the filtered products
+	const totalPages = Math.ceil(reviews.length / itemsPerPage);
+
+	const startIndex = (currentPage - 1) * itemsPerPage;
+	const endIndex = startIndex + itemsPerPage;
+
+	const currentReviews = reviews.slice(startIndex, endIndex);
+
+	const handlePageChange = (page: number) => {
+		setCurrentPage(page);
+		window.scrollTo(0, 0);
+	};
 
 	// Calculate the average rating
 	const calculateAverageRating = (reviews: Review[]) => {
@@ -86,13 +116,12 @@ const ReviewsPage = () => {
 		setRatingDistribution(distributionPercentage);
 	};
 
-	// If the product isn't found, show loading
-	if (!product) {
+	if (isLoading) {
 		return <Loader />;
 	}
 
 	const handleBack = () => {
-		if (router && router.back) {
+		if (router) {
 			router.back();
 		}
 	};
@@ -109,13 +138,15 @@ const ReviewsPage = () => {
 
 				<div className="mb-[27.19px] flex max-lg:flex-col gap-5 sm:gap-4">
 					<div>
-						<Image
-							src={product?.media[0]}
-							width={500}
-							height={500}
-							alt={product?.productName}
-							className="object-cover w-[440px] h-[350px]"
-						/>
+						{product && (
+							<Image
+								src={product?.media[0]}
+								width={500}
+								height={500}
+								alt={product?.productName}
+								className="object-cover w-[440px] h-[350px]"
+							/>
+						)}
 						<div className="p-[10px]">
 							<h1 className="pb-2 font-open-sans font-semibold text-xl leading-[27.24px] tracking-[-0.02em] text-figure-text dark:text-white">
 								{product?.productName}
@@ -134,11 +165,11 @@ const ReviewsPage = () => {
 									return (
 										<span key={i}>
 											{i < fullStar ? (
-												<FaStar className="w-6 h-6 text-[#FFCE31]" />
+												<FaStar className="w-5 h-5 sm:w-6 sm:h-6 text-[#FFCE31]" />
 											) : isHalfStar ? (
-												<FaStarHalfAlt className="w-6 h-6 text-[#FFCE31]" />
+												<FaStarHalfAlt className="w-5 h-5 sm:w-6 sm:h-6 text-[#FFCE31]" />
 											) : (
-												<FaRegStar className="w-6 h-6 text-figure-text dark:text-gray-300" />
+												<FaRegStar className="w-5 h-5 sm:w-6 sm:h-6 text-figure-text dark:text-gray-300" />
 											)}
 										</span>
 									);
@@ -161,7 +192,7 @@ const ReviewsPage = () => {
 								>
 									<p className="flex justify-center max-sm:items-center gap-[4.85px] font-work-sans font-normal text-xl sm:text-[30px] sm:leading-[34.96px] tracking-[-0.02em] text-figure-text dark:text-gray-300 w-[50px]">
 										{stars}{" "}
-										<FaStar className="w-6 h-6 sm:w-[30px] sm:h-[30px] text-[#FFCE31]" />
+										<FaStar className="w-5 h-5 sm:w-[30px] sm:h-[30px] text-[#FFCE31]" />
 									</p>
 									<div className="flex-1 h-[26.83px] mr-[5.96px] bg-old-price-text rounded-full overflow-hidden">
 										<div
@@ -182,29 +213,24 @@ const ReviewsPage = () => {
 					Previous verified reviews ({reviews?.length})
 				</h2>
 
-				{reviews.map((review, index) => (
+				{currentReviews.map((review, index) => (
 					<div key={index} className="mb-8">
-						<div className="mb-[22px] flex sm:items-center gap-4">
-							{currentUser?.photoURL || review?.ImageUrl ? (
-								<Avatar className="w-12 h-12 shrink-0">
-									<AvatarImage
-										src={currentUser?.photoURL || review?.ImageUrl}
-										alt={"User profile picture"}
-									/>
-								</Avatar>
-							) : (
-								<Avatar className="w-12 h-12 shrink-0">
-									<AvatarFallback className="text-2xl font-libre-franklin tracking-wide">
-										<UserRoundCheck size={24} />
-									</AvatarFallback>
-								</Avatar>
-							)}
-							<div className="flex-1 flex max-sm:flex-col gap-3 justify-between items-start flex-wrap">
+						<div className="mb-4 sm:mb-[22px] flex sm:items-center gap-4">
+							<Avatar className="w-12 h-12 shrink-0">
+								<AvatarImage
+									src={review?.ImageUrl}
+									alt={"User profile picture"}
+								/>
+								<AvatarFallback className="text-2xl font-libre-franklin tracking-wide">
+									<UserRoundCheck size={24} />
+								</AvatarFallback>
+							</Avatar>
+							<div className="flex-1 flex max-sm:flex-col gap-1 sm:gap-3 justify-between items-start flex-wrap">
 								<div>
-									<h2 className="font-open-sans font-semibold text-xl leading-[27.24px] text-figure-text mb-[2px] sm:mb-1 dark:text-white">
+									<h2 className="font-open-sans font-semibold text-sm sm:text-xl sm:leading-[27.24px] text-figure-text mb-[2px] sm:mb-1 dark:text-white">
 										{review?.name}
 									</h2>
-									<p className="font-open-sans font-normal text-sm leading-[19.07px] text-figure-text dark:text-gray-300">
+									<p className="font-open-sans font-normal text-xs sm:text-sm leading-[19.07px] text-figure-text dark:text-gray-300">
 										{review?.date}
 									</p>
 								</div>
@@ -214,23 +240,38 @@ const ReviewsPage = () => {
 									<div className="flex justify-start items-center gap-[2.75px]">
 										{[...Array(5)].map((_, i) =>
 											i < review.rating ? (
-												<FaStar key={i} className="w-6 h-6 text-[#FFCE31]" />
+												<FaStar
+													key={i}
+													className="w-4 h-4 sm:w-6 sm:h-6 text-[#FFCE31]"
+												/>
 											) : (
-												<Star key={i} className="w-6 h-6 text-figure-text" />
+												<Star
+													key={i}
+													className="w-4 h-4 sm:w-6 sm:h-6 text-figure-text dark:text-gray-300"
+												/>
 											)
 										)}
 									</div>
 								)}
 							</div>
 						</div>
-						<h3 className="font-open-sans font-semibold text-xl leading-[27.24px] text-figure-text mb-[10px] dark:text-white">
+						<h3 className="ml-2 font-open-sans font-semibold sm:text-xl sm:leading-[27.24px] text-figure-text mb-[10px] dark:text-white">
 							{review?.reviewTitle}
 						</h3>
-						<p className="font-open-sans font-normal text-xl leading-[32.68px] text-figure-text dark:text-gray-300">
+						<p className="ml-2 font-open-sans font-normal sm:text-xl sm:leading-[32.68px] text-figure-text dark:text-gray-300">
 							{review?.reviewMessage}
 						</p>
 					</div>
 				))}
+
+				{/* The pagination component is only rendered if there is more than one page */}
+				{totalPages > 1 && (
+					<Pagination
+						currentPage={currentPage}
+						totalPages={totalPages}
+						onPageChange={handlePageChange}
+					/>
+				)}
 			</section>
 		</main>
 	);
