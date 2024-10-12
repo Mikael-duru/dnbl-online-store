@@ -117,7 +117,11 @@ function NewPassword() {
 	};
 
 	if (isLoading) {
-		return <Loader />;
+		return (
+			<div className="absolute inset-0">
+				<Loader />
+			</div>
+		);
 	}
 
 	return (

@@ -17,9 +17,9 @@ function SignInWithFacebook() {
 			const result = await signInWithPopup(auth, provider);
 			// User signed in
 			const user = result.user;
-			console.log("User Info:", user);
+			// console.log("User Info:", user);
 			if (user) {
-				console.log(user); // Log the user object for debugging
+				// console.log(user); // Log the user object for debugging
 
 				// Extract first name and last name from displayName
 				const [firstName, lastName] = user.displayName
@@ -44,7 +44,7 @@ function SignInWithFacebook() {
 
 				// Temporary store user data in local storage
 				localStorage.setItem(
-					"SocialData",
+					"FacebookData",
 					JSON.stringify({
 						firstName: firstName,
 						lastName: lastName,

@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss"
+import tailwindAnimate from 'tailwindcss-animate';
 
 const config = {
   content: [
@@ -74,7 +75,7 @@ const config = {
       },
     },
   },
-  plugins: [],
+  plugins: [tailwindAnimate],
   darkMode: 'class',
 } satisfies Config
 

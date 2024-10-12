@@ -63,6 +63,17 @@ export default function DNBLVerifyEmail({
 							</Section>
 
 							<Text style={subText}>
+								Return to the{" "}
+								<Link
+									href="http://localhost:3000/sign-up/auth/email-verification"
+									style={link}
+								>
+									verification page
+								</Link>
+								.
+							</Text>
+
+							<Text style={subText}>
 								If you have any questions or need assistance, feel free to reach
 								out to our customer support at{" "}
 								<Link

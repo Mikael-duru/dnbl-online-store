@@ -16,7 +16,7 @@ function SignInWithGoogle() {
 			const user = result.user;
 
 			if (user) {
-				console.log(user); // Log the user object for debugging
+				// console.log(user); // Log the user object for debugging
 
 				// Extract first name and last name from displayName
 				const [firstName, lastName] = user.displayName
@@ -41,7 +41,7 @@ function SignInWithGoogle() {
 
 				// Temporary store user data in local storage
 				localStorage.setItem(
-					"SocialData",
+					"GoogleData",
 					JSON.stringify({
 						firstName: firstName,
 						lastName: lastName,

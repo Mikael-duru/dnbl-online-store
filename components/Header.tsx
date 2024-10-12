@@ -12,14 +12,6 @@ import {
 	UserRound,
 	UserRoundCheck,
 } from "lucide-react";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { User } from "firebase/auth";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
@@ -29,6 +21,14 @@ import useCart from "@/lib/hook/useCart";
 import { auth, db } from "@/firebase/firebase";
 import { getDoc, doc, setDoc, onSnapshot } from "firebase/firestore";
 import toast from "react-hot-toast";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const primaryNavigation = [
 	{ title: "Home", link: "/" },
@@ -60,8 +60,15 @@ function Header() {
 					if (doc.exists()) {
 						// Update local state with user data from Firestore
 						const userData = doc.data();
-						setUserName(userData.displayName || ""); // Default to empty if not available
-						setPhotoURL(userData.photoURL || ""); // Default to empty if not available
+						if (userData.isEmailVerified) {
+							setUserName(userData.displayName || ""); // Default to empty if not available
+							setPhotoURL(userData.photoURL || ""); // Default to empty if not available
+							// Remove social data from localStorage after saving
+							localStorage.removeItem("GoogleData");
+							localStorage.removeItem("FacebookData");
+						} else {
+							setUser(null);
+						}
 					} else {
 						// User document does not exist; handle new users
 						console.error(
@@ -69,30 +76,37 @@ function Header() {
 						);
 
 						try {
-							const storedUserData = localStorage.getItem("SocialData");
-							if (storedUserData) {
-								// Parse social data from local storage
-								const { firstName, lastName, displayName, photoURL } =
-									JSON.parse(storedUserData);
+							const googleStoredData = localStorage.getItem("GoogleData");
+							const facebookStoredData = localStorage.getItem("FacebookData");
 
-								// Save new user data to Firestore
-								await setDoc(userDocRef, {
-									firstName,
-									lastName,
-									email: user.email,
-									id: user.uid,
-									photoURL: photoURL || user.photoURL, // Use social photo or default
-									address: "",
-									city: "",
-									country: "",
-									phoneNumber: "",
-									displayName: displayName || user.displayName, // Use social display or default
-									isEmailVerified: true,
-									createdAt: new Date(), // Save creation date
-								});
+							// Parse both Google and Facebook data
+							const parsedGoogleData = googleStoredData
+								? JSON.parse(googleStoredData)
+								: null;
+							const parsedFacebookData = facebookStoredData
+								? JSON.parse(facebookStoredData)
+								: null;
 
-								// Remove SocialData from localStorage after saving
-								localStorage.removeItem("SocialData");
+							let userDataToSave = null;
+
+							// Check if Google data matches user UID
+							if (parsedGoogleData && parsedGoogleData.id === user.uid) {
+								userDataToSave = parsedGoogleData;
+							}
+							// Check if Facebook data matches user UID
+							else if (
+								parsedFacebookData &&
+								parsedFacebookData.id === user.uid
+							) {
+								userDataToSave = parsedFacebookData;
+							}
+
+							if (userDataToSave) {
+								await setDoc(userDocRef, userDataToSave);
+
+								// Remove social data from localStorage after saving
+								localStorage.removeItem("GoogleData");
+								localStorage.removeItem("FacebookData");
 
 								// Fetch user data from Firestore again to update local state
 								const updatedUserDoc = await getDoc(userDocRef);
@@ -102,7 +116,7 @@ function Header() {
 									setPhotoURL(userData.photoURL || ""); // Update photo URL
 								}
 							} else {
-								console.error("SocialData not found in localStorage"); // Log error if no social data found
+								console.error("No matching user data found in localStorage"); // Log error if no match found
 							}
 						} catch (error) {
 							// Log any errors that occur during retrieval or saving of user data
@@ -131,7 +145,7 @@ function Header() {
 			setUser(null);
 			setUserName("");
 			setPhotoURL("");
-			toast.success("You have been signed out.");
+			toast.success("You have signed out.");
 			router.push("/");
 		} catch (error) {
 			console.error("Logout error:", error);
@@ -271,7 +285,7 @@ function Header() {
 										</Avatar>
 									)}
 								</DropdownMenuTrigger>
-								<DropdownMenuContent className="relative top-8 max-sm:right-2 right-10 xl:right-0 bg-white dark:bg-[#1E1E1E] flex flex-col justify-center">
+								<DropdownMenuContent className="mt-1 mx-4 bg-white dark:bg-[#1E1E1E] dark:border-[#B47B2B] flex flex-col justify-center">
 									<DropdownMenuLabel>
 										<div className="flex items-center gap-2 px-2 pt-4 pb-3">
 											{/* profile picture */}
@@ -303,7 +317,7 @@ function Header() {
 											)}
 										</div>
 									</DropdownMenuLabel>
-									<hr />
+									<hr className="dark:border-[#B47B2B]" />
 									<Link href={"/my-account"}>
 										<DropdownMenuItem className="cursor-pointer m-3">
 											<UserRound className="mr-2 h-4 w-4" />
@@ -343,7 +357,7 @@ function Header() {
 										<IoMenu size={32} />
 									</button>
 								</DropdownMenuTrigger>
-								<DropdownMenuContent className="relative top-8 max-sm:right-4 right-10 xl:right-0 bg-white dark:bg-[#1E1E1E] flex flex-col gap-2 justify-center items-center p-4">
+								<DropdownMenuContent className="mt-3 mx-4 bg-white dark:bg-[#1E1E1E] dark:border-[#B47B2B] flex flex-col gap-2 justify-center items-center p-4">
 									{primaryNavigation.map(({ title, link }) => (
 										<DropdownMenuItem
 											key={title}

@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className="bg-white">
+			<body className="bg-white dark:bg-[#1E1E1E]">
 				<Providers>
 					<ToasterProvider />
 					<div className="container mx-auto">{children}</div>

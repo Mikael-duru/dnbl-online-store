@@ -142,7 +142,11 @@ function OTPVerification() {
 	}, [userId]);
 
 	if (!userId) {
-		return <Loader />;
+		return (
+			<div className="absolute inset-0">
+				<Loader />
+			</div>
+		);
 	}
 
 	const handleVerifyOTP = async (data: z.infer<typeof FormSchema>) => {
@@ -179,7 +183,7 @@ function OTPVerification() {
 			}
 		} catch (err) {
 			setError("Error verifying OTP. Please try again.");
-			// console.error("OTP Verification error: ", err);
+			console.error("OTP Verification error: ", err);
 		}
 	};
 
@@ -239,7 +243,7 @@ function OTPVerification() {
 			}
 		} catch (error) {
 			toast.error("An error occurred while sending OTP");
-			// console.error("Error sending OTP:", error);
+			console.error("Error sending OTP:", error);
 		}
 	};
 
@@ -312,7 +316,7 @@ function OTPVerification() {
 
 							<div className="flex items-center justify-center gap-2 mt-5 mb-6">
 								<p className="font-libre-franklin font-normal text-base leading-[23.2px]">
-									Didn’t get the code?
+									Didn&apos;t get the code?
 								</p>
 								<button
 									type="button"

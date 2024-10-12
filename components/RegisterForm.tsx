@@ -1,13 +1,9 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import { User, Eye, EyeOff, Mail } from "lucide-react";
+import { User, Eye, EyeOff, Mail, UserCheck } from "lucide-react";
 import Link from "next/link";
-import {
-	createUserWithEmailAndPassword,
-	signOut,
-	// sendEmailVerification,
-} from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -196,7 +192,7 @@ export default function RegisterForm() {
 					}
 				} catch (error) {
 					toast.error("An error occurred while sending OTP");
-					// console.error("Error sending Register OTP:", error);
+					console.error("Error sending Register OTP:", error);
 				}
 
 				// Clear form fields
@@ -205,9 +201,6 @@ export default function RegisterForm() {
 				setEmail("");
 				setPassword("");
 				router.push("/auth/email-verification");
-
-				// Immediately sign out the user after registration
-				await signOut(auth);
 			} catch (error: any) {
 				let errorMessage;
 				switch (error.code) {
@@ -402,7 +395,7 @@ export default function RegisterForm() {
 					{/* Submit form */}
 					<Button
 						type="submit"
-						label={loading ? "Loading..." : "Create Account"}
+						label={loading ? "Creating account..." : "Create Account"}
 						className="mt-4"
 						disabled={loading}
 					/>
@@ -417,6 +410,25 @@ export default function RegisterForm() {
 						Log in
 					</Link>
 				</p>
+
+				<div className="my-6 flex items-center justify-center gap-2">
+					<hr className="h-[1px] w-full bg-[#F0F2F5]" />{" "}
+					<span className="font-libre-franklin font-normal text-sm text-gray-light text-center inline-block">
+						Or
+					</span>{" "}
+					<hr className="h-[1px] w-full bg-[#F0F2F5]" />
+				</div>
+
+				<button
+					className="flex justify-center items-center gap-4 p-4 border-[1.5px] border-gray-border rounded-[6px] text-[#344054] hover:text-white hover:bg-btn-gold dark:text-gold-text dark:hover:text-white duration-200 ease-in mx-auto w-full"
+					aria-label="Verify your account"
+					onClick={() => router.push("/auth/email-verification")}
+				>
+					<UserCheck className="shrink-0 text-xl" />
+					<p className="inline-block font-libre-franklin text-base font-semibold">
+						Verify Account
+					</p>
+				</button>
 
 				<div className="flex items-center justify-center my-10 lg:hidden">
 					<Image
