@@ -1,33 +1,17 @@
-// middleware.ts
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { auth } from '@/firebase/firebase'; // Adjust according to your file structure
+import { NextResponse, NextRequest } from 'next/server';
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  const authCookie = req.cookies.get('auth');
 
   // Define routes that require authentication
-  const protectedRoutes = ['/cart/checkout', '/wishlist', '/favorites'];
+  const protectedRoutes = ['/cart/checkout-page', '/wishlists', '/my-account', '/my-account/settings'];
 
-  // Check if the request is for a protected route
-  if (protectedRoutes.some(route => pathname.startsWith(route))) {
-    const user = await new Promise((resolve) => {
-      auth.onAuthStateChanged((user) => {
-        resolve(user);
-      });
-    });
-
-    // If the user is not authenticated, redirect to the sign-in page
-    if (!user) {
-      return NextResponse.redirect(new URL('/sign-in', req.url));
-    }
+  // Check if the pathname is part of the protected routes
+  if (protectedRoutes.includes(pathname) && !authCookie) {
+    return NextResponse.redirect(new URL('/sign-in', req.url)); // Redirect to sign-in page if not authenticated
   }
 
   // Allow the request to proceed if the user is authenticated or the route is not protected
   return NextResponse.next();
 }
-
-// Specify the routes that this middleware applies to
-export const config = {
-  matcher: ['/cart/checkout', '/wishlist', '/favorites'], // Add other protected routes as necessary
-};
