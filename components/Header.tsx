@@ -338,8 +338,11 @@ function Header() {
 							</DropdownMenu>
 						)}
 
-						{/* Mobile Nav */}
-						<Link href={"/contact-us"} className="max-2xl:hidden w-[200px]">
+						{/* Contact Us */}
+						<Link
+							href={"/contact-us"}
+							className="max-xl:hidden w-[150px] 2xl:w-[200px]"
+						>
 							<ButtonPrimary
 								type="button"
 								onClick={closeMenu}
@@ -347,6 +350,7 @@ function Header() {
 							/>
 						</Link>
 
+						{/* Mobile Nav */}
 						<div className="xl:hidden relative">
 							<DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
 								<DropdownMenuTrigger asChild>
