@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import toast from "react-hot-toast";
 import { SiFacebook } from "react-icons/si";
+import Cookies from "js-cookie";
 
 import { auth, db } from "@/firebase/firebase";
 import { doc, setDoc } from "firebase/firestore";
@@ -17,6 +18,7 @@ function SignInWithFacebook() {
 			const result = await signInWithPopup(auth, provider);
 			// User signed in
 			const user = result.user;
+			Cookies.set("auth", user.uid); // Set a cookie with user ID
 			// console.log("User Info:", user);
 			if (user) {
 				// console.log(user); // Log the user object for debugging

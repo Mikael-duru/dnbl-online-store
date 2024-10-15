@@ -7,9 +7,10 @@ import Link from "next/link";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import Cookies from "js-cookie";
+
 import { auth, db } from "@/firebase/firebase";
 import { doc, getDoc } from "firebase/firestore";
-
 import Button from "./Button";
 import SignInWithGoogle from "./SignInWithGoogle";
 import SignInWithFacebook from "./SignInWithFacebook";
@@ -81,6 +82,8 @@ export default function LoginForm() {
 				);
 				const user = userCredential.user;
 
+				Cookies.set("auth", user.uid); // Set a cookie with user ID
+
 				// Fetch user document to check email verification
 				const userDoc = await getDoc(doc(db, "users", user.uid));
 				if (userDoc.exists()) {
@@ -88,6 +91,7 @@ export default function LoginForm() {
 
 					// Navigate based on email verification status
 					if (userData.isEmailVerified) {
+						window.location.href = "/";
 						router.push("/");
 						toast.success(`Welcome ${userData.firstName}!`);
 						sessionStorage.removeItem("user.uid");

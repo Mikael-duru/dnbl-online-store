@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { toast } from "react-hot-toast";
 import { FcGoogle } from "react-icons/fc";
+import Cookies from "js-cookie";
 
 function SignInWithGoogle() {
 	const router = useRouter();
@@ -14,6 +15,7 @@ function SignInWithGoogle() {
 		try {
 			const result = await signInWithPopup(auth, provider);
 			const user = result.user;
+			Cookies.set("auth", user.uid); // Set a cookie with user ID
 
 			if (user) {
 				// console.log(user); // Log the user object for debugging
