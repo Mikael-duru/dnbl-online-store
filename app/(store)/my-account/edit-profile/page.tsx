@@ -127,6 +127,9 @@ function EditProfile() {
 
 					toast.success("Profile updated successfully!");
 
+					window.location.href = "/my-account";
+					router.push("/my-account");
+
 					// Clear the form fields
 					setFormData({
 						address: "",

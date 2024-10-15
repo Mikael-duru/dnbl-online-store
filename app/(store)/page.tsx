@@ -150,7 +150,7 @@ export default function Home() {
 			</section>
 
 			{/* Trendy Products */}
-			<section className="pt-[38px] px-[5%] xl:px-[74px] pb-[68px] bg-light-brown-gold dark:bg-[#2E2E2E] dark:border-y dark:border-y-dark-brown">
+			<section className="pt-[38px] px-[5%] xl:px-[74px] pb-[68px] bg-light-brown-gold dark:bg-[#2E2E2E] dark:border-t dark:border-t-dark-brown">
 				<h2 className="home-heading text-black dark:text-white pb-2 sm:pb-4">
 					TRENDY PRODUCTS
 				</h2>
