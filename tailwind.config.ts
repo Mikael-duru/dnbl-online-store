@@ -1,5 +1,7 @@
 import type { Config } from "tailwindcss"
 import tailwindAnimate from 'tailwindcss-animate';
+// @ts-expect-error - it is installed
+import tailwindScrollbarHide from 'tailwind-scrollbar-hide';
 
 const config = {
   content: [
@@ -75,7 +77,7 @@ const config = {
       },
     },
   },
-  plugins: [tailwindAnimate],
+  plugins: [tailwindScrollbarHide, tailwindAnimate],
   darkMode: 'class',
 } satisfies Config
 
