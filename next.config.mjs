@@ -14,14 +14,13 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
         hostname: 'lh3.googleusercontent.com',  // Google user profile images
-        pathname: '/**',
       },
       {
-        protocol: 'https',
+        hostname: 'res.cloudinary.com',  // Cloudinary images
+      },
+      {
         hostname: 'graph.facebook.com',  // Facebook profile images
-        pathname: '/**',
       },
     ],
   },
