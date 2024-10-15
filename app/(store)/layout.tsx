@@ -8,9 +8,11 @@ export default function MainLayout({
 }>) {
 	return (
 		<>
-			<Header />
-			{children}
-			<Footer />
+			<div className="dark:border-2 dark:border-dark-brown">
+				<Header />
+				{children}
+				<Footer />
+			</div>
 		</>
 	);
 }
