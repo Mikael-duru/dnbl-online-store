@@ -80,7 +80,7 @@ function UserDashboard() {
 						{user ? (
 							<Avatar className="w-[150px] h-[150px] sm:w-[167px] sm:h-[167px] rounded-full">
 								<AvatarImage
-									src={user?.photoURL || photoURL}
+									src={photoURL || (user?.photoURL as string)}
 									alt={"User profile picture"}
 								/>
 								<AvatarFallback className="text-7xl font-libre-franklin tracking-wide">

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 function PrivacyNotice() {
@@ -137,7 +138,13 @@ function PrivacyNotice() {
 							If you have questions or concerns about this Privacy Notice or
 							wish to exercise your rights regarding your personal data, please
 							contact our Data Protection Officer at
-							Customersupport@denobleslimited.com.
+							<Link
+								href="mailto:Customersupport@denobleslimited.com"
+								className="text-blue-600 hover:underline"
+							>
+								Customersupport@denobleslimited.com
+							</Link>
+							.
 						</p>
 					</li>
 
@@ -147,20 +154,20 @@ function PrivacyNotice() {
 						</h2>
 						<ul className="list-disc list-inside policy-text">
 							<li className="policy-list">
-								<a
+								<Link
 									href="/cookie-notice"
 									className="text-gold-text hover:underline"
 								>
 									Cookie Notice
-								</a>
+								</Link>
 							</li>
 							<li className="policy-list">
-								<a
+								<Link
 									href="/terms-of-use"
 									className="text-gold-text hover:underline"
 								>
 									Terms and Conditions
-								</a>
+								</Link>
 							</li>
 						</ul>
 					</li>

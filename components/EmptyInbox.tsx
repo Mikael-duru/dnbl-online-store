@@ -2,13 +2,10 @@
 
 import React from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
-import ButtonPrimary from "@/components/ButtonPrimary";
+import ButtonPrimary from "@/components/custom-buttons/ButtonPrimary";
 
 const EmptyInbox = () => {
-	const router = useRouter();
-
 	return (
 		<div className="flex flex-col items-center justify-center pt-24 pb-36 sm:pt-[147px] sm:pb-[223px] bg-white dark:bg-[#2E2E2E]">
 			<Image
@@ -30,7 +27,7 @@ const EmptyInbox = () => {
 					<ButtonPrimary
 						type="button"
 						label="Continue Shopping"
-						onClick={() => router.push("/product")}
+						href="/product"
 					/>
 				</div>
 			</div>

@@ -15,8 +15,7 @@ import {
 import type { User } from "firebase/auth";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
-import ButtonPrimary from "./ButtonPrimary";
-import ButtonSecondary from "./ButtonSecondary";
+import ButtonPrimary from "./custom-buttons/ButtonPrimary";
 import useCart from "@/lib/hook/useCart";
 import { auth, db } from "@/firebase/firebase";
 import { getDoc, doc, setDoc, onSnapshot } from "firebase/firestore";
@@ -29,12 +28,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-const primaryNavigation = [
-	{ title: "Home", link: "/" },
-	{ title: "About Us", link: "/about-us" },
-	{ title: "Products", link: "/product" },
-];
+import SearchBar from "./SearchBar";
 
 function Header() {
 	const [user, setUser] = useState<User | null>(null);
@@ -44,6 +38,7 @@ function Header() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const pathname = usePathname();
 	const cart = useCart();
+	const [showSearchBar, setShowSearchBar] = useState(false);
 
 	useEffect(() => {
 		// Set up an authentication state listener
@@ -57,24 +52,7 @@ function Header() {
 
 				// Listen for real-time updates to the user's document in Firestore
 				const unsubscribeDoc = onSnapshot(userDocRef, async (doc) => {
-					if (doc.exists()) {
-						// Update local state with user data from Firestore
-						const userData = doc.data();
-						if (userData.isEmailVerified) {
-							setUserName(userData.displayName || ""); // Default to empty if not available
-							setPhotoURL(userData.photoURL || ""); // Default to empty if not available
-							// Remove social data from localStorage after saving
-							localStorage.removeItem("GoogleData");
-							localStorage.removeItem("FacebookData");
-						} else {
-							setUser(null);
-						}
-					} else {
-						// User document does not exist; handle new users
-						console.error(
-							"User document does not exist. Attempting to save new user data."
-						);
-
+					if (!doc.exists()) {
 						try {
 							const googleStoredData = localStorage.getItem("GoogleData");
 							const facebookStoredData = localStorage.getItem("FacebookData");
@@ -112,8 +90,12 @@ function Header() {
 								const updatedUserDoc = await getDoc(userDocRef);
 								if (updatedUserDoc.exists()) {
 									const userData = updatedUserDoc.data();
-									setUserName(userData.displayName || ""); // Update display name
-									setPhotoURL(userData.photoURL || ""); // Update photo URL
+									if (userData.isEmailVerified) {
+										setUserName(userData.displayName || ""); // Update display name
+										setPhotoURL(userData.photoURL || ""); // Update photo URL
+									} else {
+										setUser(null);
+									}
 								}
 							} else {
 								console.error("No matching user data found in localStorage"); // Log error if no match found
@@ -121,6 +103,18 @@ function Header() {
 						} catch (error) {
 							// Log any errors that occur during retrieval or saving of user data
 							console.error("Error retrieving or saving user data:", error);
+						}
+					} else {
+						// Update local state with user data from Firestore
+						const userData = doc.data();
+						if (userData.isEmailVerified) {
+							setUserName(userData.displayName || ""); // Default to empty if not available
+							setPhotoURL(userData.photoURL || ""); // Default to empty if not available
+							// Remove social data from localStorage after saving
+							localStorage.removeItem("GoogleData");
+							localStorage.removeItem("FacebookData");
+						} else {
+							setUser(null);
 						}
 					}
 				});
@@ -166,21 +160,6 @@ function Header() {
 		return () => window.removeEventListener("resize", handleResize);
 	}, []);
 
-	// Helper function for navigation items
-	const NavItem = ({ title, link }: any) => (
-		<li
-			className={`font-open-sans text-xl font-normal p-[10px] cursor-pointer ${
-				pathname === link
-					? "text-[#231867] dark:text-[#B47B2B]"
-					: "text-[#292D32] dark:text-white"
-			} hover:text-[#B47B2B] dark:hover:text-[#B47B2B]`}
-		>
-			<Link href={link} onClick={closeMenu}>
-				{title}
-			</Link>
-		</li>
-	);
-
 	// Helper function for icon buttons
 	const IconButton = ({ href, iconSrc, notificationCount = null }: any) => (
 		<button
@@ -205,7 +184,7 @@ function Header() {
 	);
 
 	return (
-		<header className="px-[5%] py-5 2xl:px-[6.25rem] bg-white dark:bg-[#1E1E1E] dark:border-b-2 dark:border-b-dark-brown shadow-header-shadow relative">
+		<header className="sticky top-0 z-20 px-[5%] py-5 2xl:px-[6.25rem] bg-white dark:bg-[#1E1E1E] dark:border-b-2 dark:border-b-dark-brown shadow-header-shadow">
 			<div className="flex items-center justify-between 2xl:gap-[6.25rem]">
 				<Link
 					href={"/"}
@@ -217,37 +196,47 @@ function Header() {
 						width={200}
 						height={199}
 						alt="DNBL logo"
-						className="w-[138px] h-[60px] object-contain dark:invert"
+						className="w-[100px] h-[50px] lg:w-[138px] lg:h-[60px] object-contain dark:invert"
 					/>
 				</Link>
 
 				{/* Navigation for larger screens */}
-				<nav className="flex items-center gap-[54px] lg:gap-20 xl:gap-12 2xl:gap-[54px] shrink-0">
-					{/* Primary navigation */}
-					<ul className="max-xl:hidden flex items-center gap-5">
-						{primaryNavigation.map((item) => (
-							<NavItem key={item.title} {...item} />
-						))}
-
-						{/* Favourites */}
-						<li
-							className={`font-open-sans text-xl font-normal p-[10px] cursor-pointer ${
-								pathname === "/wishlists"
-									? "text-[#231867] dark:text-[#B47B2B]"
-									: "text-[#292D32] dark:text-white"
-							} hover:text-[#B47B2B] dark:hover:text-[#B47B2B]`}
-						>
-							<Link href={!user ? "/sign-in" : "/wishlists"}>Favourites</Link>
-						</li>
-					</ul>
+				<nav className="flex justify-center items-center gap-[54px] sm:gap-10 xl:gap-12 2xl:gap-[54px] shrink-0">
+					{/* Large screen Search Bar */}
+					<div className="max-sm:hidden">
+						<SearchBar />
+					</div>
 
 					{/* Icons Menu */}
-					<div className="flex justify-center items-center gap-4 sm:gap-8">
-						<ul className="max-sm:hidden flex gap-8">
-							<IconButton
-								href="/search-products"
-								iconSrc="/assets/search-normal.svg"
-							/>
+					<div className="flex justify-center items-center gap-3 lg:gap-8">
+						{/* Mobile Search */}
+						<div className="sm:hidden">
+							<button
+								onClick={() => {
+									// closeMenu;
+									setShowSearchBar(!showSearchBar);
+								}}
+								className="relative focus:ring-2 focus:ring-[#B47B2B] outline-none"
+							>
+								<Image
+									src="/assets/search-normal.svg"
+									width={48}
+									height={48}
+									alt=""
+									className="dark:invert w-6 h-6 sm:w-8 sm:h-8"
+								/>
+							</button>
+						</div>
+
+						{/* Conditionally render the search bar */}
+						{showSearchBar && (
+							<div className="sm:hidden absolute top-[90px] left-0 w-full bg-white dark:bg-[#1e1e1e] dark:border-b-2 dark:border-b-dark-brown p-4 z-50">
+								<SearchBar />
+							</div>
+						)}
+
+						<ul className="max-lg:hidden flex gap-6">
+							<IconButton href="/wishlists" iconSrc="/assets/heart.png" />
 							<IconButton
 								href="/notice"
 								iconSrc="/assets/notification.svg"
@@ -262,7 +251,7 @@ function Header() {
 
 						{!user ? (
 							<button
-								className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 hover:text-[#B47B2B] focus:ring-1 focus:ring-[#B47B2B] duration-200 cursor-pointer outline-none border-none"
+								className="w-8 h-8 lg:w-10 lg:h-10 rounded-full flex items-center justify-center shrink-0 hover:text-[#B47B2B] focus:ring-1 focus:ring-[#B47B2B] duration-200 cursor-pointer outline-none border-none"
 								onClick={() => router.push("/sign-in")}
 							>
 								<CircleUserRound className="w-full h-full" />
@@ -273,10 +262,10 @@ function Header() {
 									{user && (
 										<Avatar
 											onClick={closeMenu}
-											className="w-12 h-12 rounded-full shrink-0 focus:ring-1 focus:ring-[#B47B2B] duration-200 cursor-pointer"
+											className="w-10 h-10 sm:w-12 sm:h-12 rounded-full shrink-0 focus:ring-1 focus:ring-[#B47B2B] duration-200 cursor-pointer"
 										>
 											<AvatarImage
-												src={user?.photoURL || photoURL}
+												src={photoURL || (user?.photoURL as string)}
 												alt={"User profile picture"}
 											/>
 											<AvatarFallback className="font-libre-franklin tracking-wide">
@@ -295,7 +284,7 @@ function Header() {
 													className="w-12 h-12 shrink-0"
 												>
 													<AvatarImage
-														src={user?.photoURL || photoURL}
+														src={photoURL || (user?.photoURL as string)}
 														alt={"User profile picture"}
 													/>
 													<AvatarFallback className="font-libre-franklin tracking-wide">
@@ -339,58 +328,57 @@ function Header() {
 						)}
 
 						{/* Contact Us */}
-						<Link
-							href={"/contact-us"}
-							className="max-xl:hidden w-[150px] 2xl:w-[200px]"
-						>
-							<ButtonPrimary
-								type="button"
-								onClick={closeMenu}
-								label="Contact Us"
-							/>
-						</Link>
+						<div className="max-xl:hidden w-[150px]">
+							<ButtonPrimary type="button" href="" label="Contact Us" />
+						</div>
 
 						{/* Mobile Nav */}
-						<div className="xl:hidden relative">
+						<div className="lg:hidden relative">
 							<DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
 								<DropdownMenuTrigger asChild>
 									<button
 										onClick={() => setIsMenuOpen(!isMenuOpen)}
 										className="outline-none flex items-center justify-center rounded focus:ring-2 focus:ring-[#B47B2B]"
 									>
-										<IoMenu size={32} />
+										<IoMenu size={30} />
 									</button>
 								</DropdownMenuTrigger>
-								<DropdownMenuContent className="mt-3 mx-4 bg-white dark:bg-[#1E1E1E] dark:border-[#B47B2B] flex flex-col gap-2 justify-center items-center p-4">
-									{primaryNavigation.map(({ title, link }) => (
-										<DropdownMenuItem
-											key={title}
-											className={`font-open-sans text-xl font-normal cursor-pointer px-14 ${
-												pathname === link
-													? "text-[#231867] dark:text-[#B47B2B]"
-													: "text-[#292D32] dark:text-white"
-											} hover:text-[#B47B2B] dark:hover:text-[#B47B2B]`}
-										>
-											<Link href={link} onClick={closeMenu}>
-												{title}
-											</Link>
-										</DropdownMenuItem>
-									))}
-
+								<DropdownMenuContent className="mt-3 mx-4 bg-white dark:bg-[#1E1E1E] dark:border-[#B47B2B] flex flex-col gap-2 justify-center p-4">
 									{/* Favourites */}
 									<DropdownMenuItem
-										className={`font-open-sans text-xl font-normal p-[10px] cursor-pointer ${
+										className={`font-open-sans text-lg font-normal p-[10px] cursor-pointer ${
 											pathname === "/wishlists"
 												? "text-[#231867] dark:text-[#B47B2B]"
 												: "text-[#292D32] dark:text-white"
 										} hover:text-[#B47B2B] dark:hover:text-[#B47B2B]`}
 									>
-										<Link href={!user ? "/sign-in" : "/wishlists"}>
-											Favourites
+										<Link
+											href={!user ? "/sign-in" : "/wishlists"}
+											className="flex items-center gap-2 hover:text-[#B47B2B]"
+										>
+											<Image
+												src="/assets/heart.png"
+												width={512}
+												height={512}
+												alt=""
+												className="dark:invert w-[25px] h-[25px]"
+											/>
+											<span>Favourites</span>
+											{cart.cartItems.length !== null && (
+												<span className="font-inter text-center">
+													({cart.cartItems.length})
+												</span>
+											)}
 										</Link>
 									</DropdownMenuItem>
 
-									<DropdownMenuItem className="sm:hidden">
+									<DropdownMenuItem
+										className={`font-open-sans text-lg font-normal p-[10px] cursor-pointer ${
+											pathname === "/wishlists"
+												? "text-[#231867] dark:text-[#B47B2B]"
+												: "text-[#292D32] dark:text-white"
+										} hover:text-[#B47B2B] dark:hover:text-[#B47B2B]`}
+									>
 										<Link
 											href="/cart"
 											onClick={closeMenu}
@@ -398,32 +386,40 @@ function Header() {
 										>
 											<Image
 												src="/assets/bytesize_cart.svg"
-												width={32}
-												height={32}
+												width={26}
+												height={26}
 												alt=""
 												className="dark:invert"
 											/>
-											<span className="font-open-sans text-xl font-normal cursor-pointer text-[#292D32] dark:text-white">
-												Cart
-											</span>
+											<span>Cart</span>
 											{cart.cartItems.length !== null && (
-												<span className="font-inter text-xl font-normal text-[#292D32] dark:text-gray-400 text-center tracking-[-0.33px]">
+												<span className="font-inter text-center">
 													({cart.cartItems.length})
 												</span>
 											)}
 										</Link>
 									</DropdownMenuItem>
 
-									<DropdownMenuItem>
+									<DropdownMenuItem
+										className={`font-open-sans text-lg font-normal p-[10px] cursor-pointer ${
+											pathname === "/wishlists"
+												? "text-[#231867] dark:text-[#B47B2B]"
+												: "text-[#292D32] dark:text-white"
+										} hover:text-[#B47B2B] dark:hover:text-[#B47B2B]`}
+									>
 										<Link
-											href={"/search-products"}
-											className="w-[180px] sm:hidden"
+											href="/notice"
+											onClick={closeMenu}
+											className="flex items-center gap-2 hover:text-[#B47B2B]"
 										>
-											<ButtonSecondary
-												type="button"
-												onClick={closeMenu}
-												label="Search Products..."
+											<Image
+												src="/assets/notification.svg"
+												width={26}
+												height={26}
+												alt=""
+												className="dark:invert"
 											/>
+											<span>Notifications</span>
 										</Link>
 									</DropdownMenuItem>
 								</DropdownMenuContent>

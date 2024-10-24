@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import React from "react";
-import ButtonPrimary from "@/components/ButtonPrimary";
+import ButtonPrimary from "@/components/custom-buttons/ButtonPrimary";
 
 const measurements = [
 	{

@@ -13,7 +13,7 @@ const Gallery = ({ productMedia }: { productMedia: string[] }) => {
 				width={555}
 				height={500}
 				alt="product"
-				className="w-full h-[250px] sm:h-[330px] shadow-xl object-cover border border-black"
+				className="max-sm:w-[300px] w-full h-[200px] sm:h-[350px] shadow-xl object-contain border border-black bg-[#fdfdfd] dark:border-[#B47B2B]"
 			/>
 			<div className="flex gap-2 lg:gap-3 overflow-auto">
 				{productMedia.map((image, index) => (
@@ -23,8 +23,10 @@ const Gallery = ({ productMedia }: { productMedia: string[] }) => {
 						height={150}
 						width={150}
 						alt="product"
-						className={`w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] rounded-lg object-cover cursor-pointer ${
-							mainImage === image ? "border-2 border-black" : ""
+						className={`w-[80px] h-[80px] lg:w-[100px] lg:h-[100px] rounded-lg object-contain bg-[#fdfdfd] cursor-pointer ${
+							mainImage === image
+								? "border-2 border-black dark:border-[#B47B2B]"
+								: ""
 						}`}
 						onClick={() => setMainImage(image)}
 					/>

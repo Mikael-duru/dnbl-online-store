@@ -34,7 +34,7 @@ const CheckOut: React.FC = () => {
 	const [showToast, setShowToast] = useState<boolean>(false);
 
 	const total = cart.cartItems.reduce(
-		(acc, cartItem) => acc + cartItem.item.newPrice * cartItem.quantity,
+		(acc, cartItem) => acc + cartItem.item.price * cartItem.quantity,
 		0
 	);
 	const totalRounded = parseFloat(total.toFixed(2));
@@ -65,8 +65,8 @@ const CheckOut: React.FC = () => {
 			const orderDetails = cart?.cartItems
 				.map(
 					(item) =>
-						`${item.item.productName} x ${item.quantity} - ₦${(
-							item.item.newPrice * item.quantity
+						`${item.item.title} x ${item.quantity} - ₦${(
+							item.item.price * item.quantity
 						).toLocaleString()}`
 				)
 				.join("\n");
@@ -296,7 +296,7 @@ const CheckOut: React.FC = () => {
 								{cart?.cartItems?.map((cartItem) => (
 									<tr key={cartItem.item._id}>
 										<td className="whitespace-wrap py-2 font-medium text-black dark:text-white font-open-sans text-left text-sm sm:text-base">
-											{cartItem.item.productName}
+											{cartItem.item.title}
 										</td>
 										<td className="whitespace-nowrap py-2 text-light-black dark:text-white font-open-sans text-center text-sm sm:text-base">
 											{cartItem.quantity}
@@ -304,7 +304,7 @@ const CheckOut: React.FC = () => {
 										<td className="whitespace-nowrap py-2 text-light-black dark:text-white font-open-sans text-right text-sm sm:text-base">
 											₦
 											{(
-												cartItem.item.newPrice * cartItem.quantity
+												cartItem.item.price * cartItem.quantity
 											).toLocaleString()}
 										</td>
 									</tr>

@@ -81,7 +81,7 @@ function UserDashboard() {
 						My Account
 					</h1>
 					<CiMenuKebab
-						className="cursor-pointer lg:hidden"
+						className="cursor-pointer lg:hidden text-black dark:text-white text-xl"
 						onClick={() => setIsDropdownOpen(!isDropdownOpen)}
 					/>
 				</div>

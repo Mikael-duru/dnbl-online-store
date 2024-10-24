@@ -1,57 +1,18 @@
-"use client";
-
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-
-import ButtonPrimary from "@/components/ButtonPrimary";
-import ButtonSecondary from "@/components/ButtonSecondary";
-import Slider from "@/components/Slider";
-import FeaturedProducts from "@/components/FeaturedProducts";
-import WhyChooseUs from "@/components/WhyChooseUs";
-import { getFilteredCategoryProducts } from "@/constants/productsStore";
 import Link from "next/link";
 
+import ButtonPrimary from "@/components/custom-buttons/ButtonPrimary";
+import ButtonSecondary from "@/components/custom-buttons/ButtonSecondary";
+import WhyChooseUs from "@/components/home-page/WhyChooseUs";
+import Collections from "@/components/home-page/Collections";
+import HomeBanner from "@/components/home-page/HomeBanner";
+import ProductLists from "@/components/home-page/ProductLists";
+
 export default function Home() {
-	const router = useRouter();
-
-	// Filter products by the 'trendy' category
-	const trendyProducts = getFilteredCategoryProducts("trendy");
-
 	return (
 		<main className="bg-white dark:bg-[#1E1E1E]">
 			{/* Banner */}
-			<section className="relative">
-				<Image
-					src="/assets/home-banner.png"
-					alt="Home Banner"
-					width={1440}
-					height={721}
-					className="w-auto h-auto object-cover"
-				/>
-				<div className="absolute inset-0 bg-banner-layer flex flex-col items-center justify-center">
-					<div className="w-[320px] xs:w-[400px] sm:w-[630px] lg:w-[921px] text-center">
-						<h1 className="text-text-gray dark:text-white font-poppins-black font-black text-lg xs:text-2xl leading-[120%] sm:text-3xl md:text-[35.5px] lg:text-5xl lg:leading-[56px] tracking-[-0.96px] pb-[1.5%] xs:pb-4">
-							Connecting the Nigerian&nbsp;
-							<span className="text-brown-gold">Diaspora</span> with&nbsp;
-							<span className="text-brown-gold">Elegance</span> and&nbsp;
-							<span className="text-brown-gold">Pride</span>
-						</h1>
-
-						<p className="text-white dark:text-gray-300 font-open-sans text-xs sm:text-xl lg:text-[28px] lg:leading-[40px] font-normal tracking-[-0.56px] pb-[5%] sm:pb-[38px]">
-							Celebrate Your Heritage in Style with Premium Quality Products.
-							Embrace Elegance and Sophistication.
-						</p>
-
-						<div className="w-[200px] sm:w-[400px] mx-auto">
-							<ButtonPrimary
-								type="button"
-								label="Explore products"
-								onClick={() => router.push("/product")}
-							/>
-						</div>
-					</div>
-				</div>
-			</section>
+			<HomeBanner />
 
 			{/* Services Card */}
 			<section className="relative py-16 xl:py-0">
@@ -118,7 +79,7 @@ export default function Home() {
 								<ButtonSecondary
 									type="button"
 									label="Read More"
-									onClick={() => router.push("/about-us")}
+									// onClick={() => router.push("/about-us")}
 								/>
 							</div>
 						</div>
@@ -149,53 +110,11 @@ export default function Home() {
 				</div>
 			</section>
 
-			{/* Trendy Products */}
-			<section className="pt-[38px] px-[5%] xl:px-[74px] pb-[68px] bg-light-brown-gold dark:bg-[#2E2E2E] dark:border-t dark:border-t-dark-brown">
-				<h2 className="home-heading text-black dark:text-white pb-2 sm:pb-4">
-					TRENDY PRODUCTS
-				</h2>
+			{/* Collections */}
+			<Collections />
 
-				<p className="home-headline text-black dark:text-gray-300 pb-11">
-					Discover the Latest Styles. Stay Ahead with the Latest Trends, Curated
-					Just for You.
-				</p>
-
-				<div className="sm:px-4">
-					<Slider prods={trendyProducts} />
-				</div>
-
-				{trendyProducts.length > 6 && (
-					<div className="mt-10 w-[150px] mx-auto">
-						<ButtonSecondary
-							type="button"
-							label="View All"
-							onClick={() => router.push("/products-category/trendy")}
-						/>
-					</div>
-				)}
-			</section>
-
-			{/* Featured Products */}
-			<section className="pt-[100px] px-[5%] xl:px-[74px] pb-[68px] bg-[#FDFDFD] dark:bg-[#2E2E2E]">
-				<h2 className="home-heading text-black dark:text-white pb-2">
-					FEATURED PRODUCTS
-				</h2>
-
-				<p className="home-headline text-black dark:text-gray-300 pb-6">
-					Discover Handpicked Products That Embody Elegance, Quality, and
-					Cultural Pride.
-				</p>
-
-				<FeaturedProducts />
-
-				<div className="mt-10 w-[200px] mx-auto">
-					<ButtonSecondary
-						type="button"
-						label="View All Products"
-						onClick={() => router.push("/products-category/featured")}
-					/>
-				</div>
-			</section>
+			{/* Products Display */}
+			<ProductLists />
 
 			{/* Why Choose Us */}
 			<section className="pt-[89px] px-[5%] 2xl:pl-[95px] 2xl:pr-[105px] pb-24 sm:pb-[164px] bg-white dark:bg-[#1E1E1E] relative">
@@ -268,7 +187,7 @@ export default function Home() {
 						<ButtonPrimary
 							type="button"
 							label="Contact Us"
-							onClick={() => router.push("/contact-us")}
+							// onClick={() => router.push("/contact-us")}
 						/>
 					</div>
 				</div>
@@ -276,3 +195,5 @@ export default function Home() {
 		</main>
 	);
 }
+
+export const dynamic = "force-dynamic";

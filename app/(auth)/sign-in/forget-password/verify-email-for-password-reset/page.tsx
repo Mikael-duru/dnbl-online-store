@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Mail } from "lucide-react";
 import { sendPasswordResetEmail } from "firebase/auth";
 
-import ButtonPrimary from "@/components/ButtonPrimary";
+import ButtonPrimary from "@/components/custom-buttons/ButtonPrimary";
 import { auth } from "@/firebase/firebase";
 import AlertCard from "@/components/AlertCard";
 

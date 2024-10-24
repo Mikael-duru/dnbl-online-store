@@ -7,51 +7,70 @@ import { useEffect, useState } from "react";
 import type { User } from "firebase/auth";
 
 import useCart from "@/lib/hook/useCart";
-import ButtonSecondary from "@/components/ButtonSecondary";
-import Loader from "@/components/Loader";
+import ButtonSecondary from "@/components/custom-buttons/ButtonSecondary";
 import CustomDropdown from "@/components/CustomDropdown";
-import { auth } from "@/firebase/firebase";
+import { auth, db } from "@/firebase/firebase";
 import { toast } from "react-hot-toast";
 import RecentlyViewed from "@/components/RecentlyViewedProducts";
 import { onAuthStateChanged } from "firebase/auth";
+import { doc, onSnapshot } from "firebase/firestore";
+import CartItem from "@/components/CartLists";
 
 const countriesOptions = [
-	{ value: "US", label: "USA" },
-	{ value: "CA", label: "Canada" },
 	{ value: "NG", label: "Nigeria" },
+	{ value: "US", label: "USA or Canada" },
+	// { value: "CA", label: "Canada" },
 ];
 
 const Cart = () => {
 	const [user, setUser] = useState<User | null>(null);
+	const [userName, setUserName] = useState<string | null>(null);
 	const router = useRouter();
-	const [isLoading, setIsLoading] = useState(true);
 	const cart = useCart();
 	const [country, setCountry] = useState<string>("");
 	const [errors, setErrors] = useState<{ country?: string }>({});
-	// const user = auth.currentUser;
 
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
 			if (user) {
 				setUser(user);
+
+				// Reference to the user's document in Firestore
+				const userDocRef = doc(db, "users", user.uid);
+
+				// Listen for real-time updates to the user's document in Firestore
+				const unsubscribeDoc = onSnapshot(userDocRef, async (doc) => {
+					if (doc.exists()) {
+						const userData = doc.data();
+						if (userData) {
+							setUserName(userData.displayName || "");
+						}
+					}
+				});
+				// Clean up the Firestore listener when the component unmounts
+				return () => unsubscribeDoc();
 			} else {
 				setUser(null);
 			}
-			setIsLoading(false); // Stop loading
 		});
 		return () => unsubscribe(); // Cleanup subscription
 	}, []);
 
 	const total = cart?.cartItems?.reduce(
-		(acc, cartItem) => acc + cartItem.item.newPrice * cartItem.quantity,
+		(acc, cartItem) => acc + cartItem.item.price * cartItem.quantity,
 		0
 	);
 	const totalRounded = parseFloat(total.toFixed(2));
 
+	const customer = {
+		firebaseId: user?.uid,
+		email: user?.email,
+		name: userName,
+	};
+
 	const handleCheckout = async () => {
 		// Check if user is signed in
 		if (!user) {
-			// Show alert or toast notification
 			toast.error("You need to be signed in to proceed to checkout.");
 			return;
 		} else {
@@ -68,20 +87,31 @@ const Cart = () => {
 			} else {
 				router.push("/cart/checkout-page");
 			}
-		} else if (country === "US" || country === "CA") {
+		} else if (country === "US") {
 			if (cart?.cartItems.length === 0) {
 				setErrors({ country: "Please add item to cart." });
 			} else {
-				console.log("Calling Stripe API for US or Canada checkout...");
+				try {
+					if (user) {
+						const res = await fetch(
+							`${process.env.NEXT_PUBLIC_API_URL}/checkout`,
+							{
+								method: "POST",
+								body: JSON.stringify({ cartItems: cart.cartItems, customer }),
+							}
+						);
+						const data = await res.json();
+						window.location.href = data.url;
+						console.log(data);
+					}
+				} catch (err) {
+					console.log("[checkout_POST]", err);
+				}
 			}
 		} else {
 			setErrors({ country: "Please select a valid country." });
 		}
 	};
-
-	if (isLoading) {
-		return <Loader />;
-	}
 
 	return (
 		<main className="bg-white dark:bg-[#2E2E2E]">
@@ -113,79 +143,18 @@ const Cart = () => {
 								<ButtonSecondary
 									type="button"
 									label="Return to Shop"
-									onClick={() => router.push("/product")}
+									href="/product"
 								/>
 							</div>
 						</div>
 					) : (
 						<div>
 							{cart?.cartItems?.map((cartItem) => (
-								<div
+								<CartItem
 									key={cartItem.item._id}
-									className="w-full flex max-sm:flex-col max-sm:gap-4 gap-8 hover:bg-gray-100 items-center max-sm:items-start justify-between dark:hover:bg-gray-700 mt-6 sm:-8 rounded-lg"
-								>
-									<div className="flex items-center sm:w-[380px] shrink-0 ">
-										<Image
-											src={cartItem.item.media[0]}
-											width={100}
-											height={100}
-											className="rounded-lg w-32 h-32 object-cover"
-											alt="product"
-										/>
-										<div className="flex flex-col gap-1 ml-4">
-											<p className="text-small-bold dark:text-white">
-												{cartItem.item.productName}
-											</p>
-											{cartItem.color && (
-												<p className="text-small-medium dark:text-white">
-													Color: <strong>{cartItem.color}</strong>
-												</p>
-											)}
-											{cartItem.size && (
-												<p className="text-small-medium dark:text-white">
-													Size: <strong>{cartItem.size}</strong>
-												</p>
-											)}
-											<p className="text-small-medium dark:text-white">
-												Price:{" "}
-												<strong>
-													₦{cartItem.item.newPrice.toLocaleString()}
-												</strong>
-											</p>
-										</div>
-									</div>
-
-									<div className="flex-1 flex items-center justify-between gap-10 shrink-0">
-										<div className="flex gap-4 items-center">
-											<CiSquareMinus
-												size={28}
-												className={`cursor-pointer ${
-													cartItem.quantity === 1
-														? "text-grey-500 cursor-not-allowed"
-														: "hover:text-red-500"
-												}`}
-												onClick={() =>
-													cartItem.quantity > 1 &&
-													cart.decreaseQuantity(cartItem.item._id)
-												}
-											/>
-											<p className="text-body-bold dark:text-white">
-												{cartItem.quantity}
-											</p>
-											<CiSquarePlus
-												size={28}
-												className="hover:text-green-500 cursor-pointer"
-												onClick={() => cart.increaseQuantity(cartItem.item._id)}
-											/>
-										</div>
-
-										<FaRegTrashAlt
-											size={24}
-											className="hover:text-red-500 cursor-pointer sm:mr-4"
-											onClick={() => cart.removeItem(cartItem.item._id)}
-										/>
-									</div>
-								</div>
+									cartItem={cartItem}
+									cart={cart}
+								/>
 							))}
 						</div>
 					)}
@@ -228,17 +197,20 @@ const Cart = () => {
 					)}
 
 					<div className="w-[200px] sm:w-[250px] mx-auto mt-2">
-						<ButtonSecondary
+						<button
 							type="button"
-							label="Proceed to Checkout"
 							onClick={handleCheckout}
-						/>
+							className="flex flex-col justify-center items-center py-2 px-3 sm:p-3 2xl:py-4 2xl:px-6 gap-2 w-full shadow-btn-shadow rounded-lg text-base font-libre-franklin font-semibold border border-gold-text text-gold-text 
+                hover:text-white hover:bg-btn-gold duration-300"
+						>
+							Proceed to Checkout
+						</button>
 					</div>
 				</div>
 			</section>
 
 			{/* recently viewed */}
-			<section className="px-[5%] pb-10 border-t border-t-gold-border">
+			<section className="px-[5%] pb-10">
 				<div className="sm:px-6">
 					<RecentlyViewed />
 				</div>
@@ -246,5 +218,7 @@ const Cart = () => {
 		</main>
 	);
 };
+
+export const dynamic = "force-dynamic";
 
 export default Cart;

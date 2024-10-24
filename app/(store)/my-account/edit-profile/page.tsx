@@ -8,7 +8,7 @@ import type { User } from "firebase/auth";
 import { MdPhotoLibrary } from "react-icons/md";
 
 import LeftSideBar from "@/components/user-dashboard/LeftSideBar";
-import ButtonPrimary from "@/components/ButtonPrimary";
+import ButtonPrimary from "@/components/custom-buttons/ButtonPrimary";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/firebase/firebase";
 import { getDoc, doc, updateDoc } from "firebase/firestore";
@@ -127,7 +127,6 @@ function EditProfile() {
 
 					toast.success("Profile updated successfully!");
 
-					window.location.href = "/my-account";
 					router.push("/my-account");
 
 					// Clear the form fields

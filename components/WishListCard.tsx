@@ -4,31 +4,47 @@ import Image from "next/image";
 import Link from "next/link";
 import slugify from "slugify";
 import { CiSquarePlus, CiSquareMinus } from "react-icons/ci";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useCart from "@/lib/hook/useCart";
-import useWishlistStore from "@/lib/hook/useWishlist";
 import SizeChart from "./SizeChart";
+import { FaStar } from "react-icons/fa";
+import HeartFavorite from "./HeartFavourite";
+import { useCalculateRemainingInventory } from "./Inventory";
 
-const WishListCard = ({ product }: { product: ProductType }) => {
+interface ProductCardProps {
+	product: ProductType;
+	updateSignedInUser?: (updatedUser: UserType) => void;
+}
+
+const WishListCard = ({ product, updateSignedInUser }: ProductCardProps) => {
+	const [reviews, setReviews] = useState<ReviewType[]>([]);
 	const [quantity, setQuantity] = useState<number>(1);
 	const cart = useCart();
-	const productUrl = slugify(product.productName);
+	const productUrl = slugify(product.title);
 	const [selectedColor, setSelectedColor] = useState<string>(
 		product?.colors[0]
 	);
 	const [selectedSize, setSelectedSize] = useState<string>(product?.sizes[0]);
 	const [showSizeChart, setShowSizeChart] = useState<boolean>(false); // State to handle size chart visibility
 
+	useEffect(() => {
+		const fetchReviews = async () => {
+			const response = await fetch(`/api/reviews/${product._id}`);
+			const data: ReviewType[] = await response.json();
+			setReviews(data);
+		};
+
+		fetchReviews();
+	}, [product._id]);
+
 	// Product status
-	const disabled = product?.quantity === 0;
+	const remainingInventory = useCalculateRemainingInventory(product);
 
-	const removeFromWishlist = useWishlistStore(
-		(state) => state.removeFromWishlist
-	);
+	if (!remainingInventory) {
+		return null;
+	}
 
-	const handleRemoveClick = () => {
-		removeFromWishlist(product?._id);
-	};
+	const isOutOfStock = remainingInventory <= 0;
 
 	const handleRecentlyViewed = () => {
 		const recentlyViewed = JSON.parse(
@@ -46,8 +62,8 @@ const WishListCard = ({ product }: { product: ProductType }) => {
 	};
 
 	return (
-		<div className="bg-white dark:bg-[#3E3E3E] border-[1.47px] rounded-[5.87px] border-product-card-border p-6 shadow-md w-full max-sm:mx-auto max-w-[800px] overflow-hidden sm:flex sm:gap-6">
-			<div>
+		<div className="bg-white dark:bg-[#3E3E3E] border-[1.47px] rounded-[5.87px] border-product-card-border p-6 shadow-md w-full max-sm:mx-auto max-w-[900px] overflow-hidden sm:flex sm:gap-6">
+			<div className="w-full sm:w-[280px] sm:h-[360px]">
 				<Link
 					href={`/product/${productUrl}?id=${product?._id}`}
 					key={product?._id}
@@ -55,10 +71,10 @@ const WishListCard = ({ product }: { product: ProductType }) => {
 				>
 					<Image
 						src={product?.media[0]}
-						alt={product?.productName}
-						width={300}
-						height={320}
-						className="w-full sm:w-[280px] sm:h-[320px] object-cover rounded-lg cursor-pointer"
+						alt={product?.title}
+						width={500}
+						height={500}
+						className="w-full sm:w-[280px] sm:h-[365px] object-contain rounded-lg cursor-pointer bg-white"
 					/>
 				</Link>
 			</div>
@@ -66,20 +82,36 @@ const WishListCard = ({ product }: { product: ProductType }) => {
 			<div className="flex-1 max-sm:pt-[11.74px]">
 				<div>
 					<h3 className="text-lg font-semibold text-black dark:text-white font-rubik">
-						{product?.productName}
+						{product?.title}
 					</h3>
-					{product?.newPrice ? (
-						<p className="text-base font-bold font-open-sans text-figure-text dark:text-white flex items-baseline gap-[5.47px] my-2 sm:my-3">
-							₦{product.newPrice.toLocaleString()} &nbsp;
-							<span className="line-through font-normal text-sm text-old-price-text">
+
+					<p className="font-open-sans text-sm text-figure-text font-medium dark:text-gray-300 my-[5.87px] capitalize">
+						<span className="text-[#777]">Category:</span> {product?.category}
+					</p>
+
+					{product?.oldPrice ? (
+						<p className="text-base font-bold font-open-sans text-figure-text dark:text-white flex items-baseline gap-[5.47px] my-3">
+							₦{product.price.toLocaleString()}
+							<span className="line-through font-bold text-sm text-old-price-text">
 								₦{product.oldPrice.toLocaleString()}
 							</span>
 						</p>
 					) : (
 						<p className="text-base font-bold font-open-sans text-figure-text dark:text-white my-2 sm:my-3">
-							₦{product.oldPrice.toLocaleString()}
+							₦{product.price.toLocaleString()}
 						</p>
 					)}
+
+					<div>
+						{reviews?.length > 0 && (
+							<div className="flex items-center gap-[10px] mb-4">
+								<FaStar className="h-5 w-5 text-star-rating-color" />
+								<span className="lg:text-lg font-normal text-black dark:text-white font-open-sans">
+									{reviews.length} {reviews.length > 1 ? "reviews" : "review"}
+								</span>
+							</div>
+						)}
+					</div>
 
 					{product?.colors.length > 0 && (
 						<div className="flex max-sm:flex-col gap-2 sm:items-center sm:gap-4 mb-5">
@@ -90,7 +122,7 @@ const WishListCard = ({ product }: { product: ProductType }) => {
 								{product.colors.map((color, index) => (
 									<div
 										key={index}
-										className={`w-[32px] h-[32px] rounded-lg cursor-pointer hover:border-black ${
+										className={`w-8 lg:w-10 h-8 lg:h-10 rounded-lg cursor-pointer hover:border-black ${
 											selectedColor === color
 												? "border-2 border-black"
 												: "border"
@@ -104,7 +136,7 @@ const WishListCard = ({ product }: { product: ProductType }) => {
 					)}
 
 					{product?.sizes.length > 0 && (
-						<div className="flex max-sm:flex-col gap-2 sm:items-center sm:gap-4 mb-3">
+						<div className="flex max-sm:flex-col gap-2 sm:items-center sm:gap-4 mb-2">
 							<p className="font-open-sans font-semibold text-base text-black dark:text-white">
 								Available Sizes:
 							</p>
@@ -112,13 +144,13 @@ const WishListCard = ({ product }: { product: ProductType }) => {
 								{product.sizes.map((size, index) => (
 									<p
 										key={index}
-										className={`w-[32px] h-[32px] bg-old-price-text border-2 hover:border-black rounded-lg cursor-pointer font-semibold text-base leading-[24px] tracking-[-0.6%] overflow-hidden ${
+										className={`w-8 lg:w-10 h-8 lg:h-10 bg-old-price-text border-2 hover:border-black rounded-lg cursor-pointer font-semibold text-xs lg:text-sm tracking-[-0.6%] overflow-hidden uppercase ${
 											selectedSize === size && "border-0"
 										}`}
 										onClick={() => setSelectedSize(size)}
 									>
 										<span
-											className={`p-[8px] sm:p-[10px] w-full h-full flex items-center justify-center ${
+											className={`p-[8px] sm:p-[10px] w-full h-full flex items-center justify-center  ${
 												selectedSize === size
 													? "bg-black text-white"
 													: "text-black dark:bg-white"
@@ -145,46 +177,60 @@ const WishListCard = ({ product }: { product: ProductType }) => {
 				</div>
 
 				{/* Quantity */}
-				<div className="flex items-center gap-4 mt-3">
-					<p className="font-open-sans font-semibold text-base text-black dark:text-white">
-						Quantity:
-					</p>
-
-					<div className="flex gap-3 items-center">
-						<CiSquareMinus
-							size={28}
-							className="hover:text-red-500 cursor-pointer"
-							onClick={() => quantity > 1 && setQuantity(quantity - 1)}
-						/>
-
-						<p className="font-rubik font-normal text-xl text-black dark:text-white">
-							{quantity}
+				{!isOutOfStock && (
+					<div className="flex items-center gap-4 mt-4">
+						<p className="font-open-sans font-semibold text-base text-black dark:text-white">
+							Quantity:
 						</p>
 
-						<CiSquarePlus
-							size={28}
-							className="hover:text-green-500 cursor-pointer"
-							onClick={() => setQuantity(quantity + 1)}
-						/>
-					</div>
-				</div>
+						<div className="flex gap-3 items-center">
+							<CiSquareMinus
+								size={28}
+								className="hover:text-red-500 cursor-pointer"
+								onClick={() => quantity > 1 && setQuantity(quantity - 1)}
+							/>
 
-				{disabled ? (
-					<p className="font-open-sans font-semibold text-base text-black dark:text-white pt-3">
+							<p className="font-rubik font-normal text-xl text-black dark:text-white">
+								{quantity}
+							</p>
+
+							<button
+								disabled={remainingInventory === quantity}
+								onClick={() => setQuantity(quantity + 1)}
+							>
+								<CiSquarePlus
+									size={28}
+									className={`hover:text-green-500 cursor-pointer ${
+										remainingInventory === quantity &&
+										"cursor-not-allowed hover:text-red-500"
+									}`}
+								/>
+							</button>
+						</div>
+					</div>
+				)}
+
+				{isOutOfStock ? (
+					<p className="font-open-sans font-semibold text-base text-black dark:text-white pt-4">
 						Status: <span className="text-red-500">Out of Stock</span>
 					</p>
 				) : (
-					<p className="font-open-sans font-semibold text-base text-black dark:text-white pt-3">
+					<p className="font-open-sans font-semibold text-base text-black dark:text-white pt-4">
 						Status: <span className="text-green-500">In Stock</span>
+						{remainingInventory <= 10 && (
+							<span className="text-red-500 font-rubik pl-1 text-sm tracking-[0.06em]">
+								({remainingInventory} left!)
+							</span>
+						)}
 					</p>
 				)}
 
-				<div className="mt-5 flex items-center gap-10">
+				<div className="mt-5 flex items-center gap-20">
 					<button
 						type="button"
-						disabled={disabled}
-						className={`font-rubik font-medium text-sm leading-[16.59px] text-figure-text dark:text-white flex gap-1 items-center justify-center ${
-							disabled ? "cursor-not-allowed" : "cursor-pointer"
+						disabled={isOutOfStock}
+						className={`font-rubik font-medium text-sm  text-figure-text dark:text-white flex gap-1 items-center justify-center ${
+							isOutOfStock ? "cursor-not-allowed" : "cursor-pointer"
 						}`}
 						onClick={() => {
 							cart.addItem({
@@ -207,22 +253,10 @@ const WishListCard = ({ product }: { product: ProductType }) => {
 						Add To Cart
 					</button>
 
-					<button
-						type="button"
-						className="font-rubik font-medium text-sm leading-[16.59px] text-[#FE5D5D] flex items-center gap-1"
-						onClick={handleRemoveClick}
-					>
-						<span>
-							<Image
-								src="/assets/Delete.svg"
-								width={18.86}
-								height={20.57}
-								alt=""
-								className="object-cover"
-							/>
-						</span>
-						Remove
-					</button>
+					<HeartFavorite
+						product={product}
+						updateSignedInUser={updateSignedInUser}
+					/>
 				</div>
 			</div>
 		</div>

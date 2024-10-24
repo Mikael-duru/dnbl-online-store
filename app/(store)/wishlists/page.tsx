@@ -1,36 +1,70 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
 
-import Slider from "@/components/Slider";
-import useWishlistStore from "@/lib/hook/useWishlist";
+import ButtonPrimary from "@/components/custom-buttons/ButtonPrimary";
 import Loader from "@/components/Loader";
-import RecentlyViewed from "@/components/RecentlyViewedProducts";
-import WishListCard from "@/components/WishListCard";
+import { auth } from "@/firebase/firebase";
+import { getProductDetails } from "@/lib/actions/actions";
 import Pagination from "@/components/Pagination";
-import { getFilteredCategoryProducts } from "@/constants/productsStore";
-import ButtonPrimary from "@/components/ButtonPrimary";
+import WishListCard from "@/components/WishListCard";
+import { onAuthStateChanged, type User } from "firebase/auth";
+import RecentlyViewed from "@/components/RecentlyViewedProducts";
 
 const COOKIE_NAME = "currentWishListPage";
 
-function WishList() {
-	const router = useRouter();
-
-	// Filter products by the 'trendy' category
-	const trendyProducts = getFilteredCategoryProducts("trendy"); // Get all trendy products
-
-	// Hook calls at the top, ensuring they are consistent across renders
-	const { wishlistItems, loadWishlist, loading } = useWishlistStore();
+const Wishlist = () => {
+	const [loading, setLoading] = useState(true);
+	const [signedInUser, setSignedInUser] = useState<UserType | null>(null);
+	const [wishlist, setWishlist] = useState<ProductType[]>([]);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [itemsPerPage, setItemsPerPage] = useState(10); // Default to 10
+	const [user, setUser] = useState<User | null>(null);
 
-	// Load wishlist from cookie on mount
+	// Check authentication state
 	useEffect(() => {
-		loadWishlist();
-	}, [loadWishlist]);
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
+			if (user) {
+				setUser(user);
+			} else {
+				setUser(null);
+			}
+		});
+		return () => unsubscribe(); // Cleanup subscription
+	}, []);
+
+	const getUser = async () => {
+		try {
+			if (user) {
+				const idToken = await user.getIdToken();
+
+				const res = await fetch("/api/users", {
+					method: "GET",
+					headers: {
+						Authorization: `Bearer ${idToken}`,
+						"Content-Type": "application/json",
+					},
+				});
+				const data = await res.json();
+				setSignedInUser(data);
+				setLoading(false);
+			} else {
+				console.log("User not found");
+			}
+		} catch (err) {
+			console.log("[users_GET", err);
+		}
+	};
+
+	useEffect(() => {
+		if (user) {
+			getUser();
+		}
+	}, [user]);
+
+	console.log(signedInUser);
 
 	useEffect(() => {
 		const savedPage = Cookies.get(COOKIE_NAME);
@@ -58,26 +92,51 @@ function WishList() {
 	}, []);
 
 	// Calculate total pages based on the filtered products
-	const totalPages = Math.ceil(wishlistItems.length / itemsPerPage);
+	const totalPages = Math.ceil(wishlist.length / itemsPerPage);
 
 	const startIndex = (currentPage - 1) * itemsPerPage;
 	const endIndex = startIndex + itemsPerPage;
 
-	const currentProducts = wishlistItems.slice(startIndex, endIndex);
+	const currentProducts = wishlist.slice(startIndex, endIndex);
 
 	const handlePageChange = (page: number) => {
 		setCurrentPage(page);
 		window.scrollTo(0, 0);
 	};
 
-	// Early return for loading state
+	const getWishlistProducts = async () => {
+		setLoading(true);
+
+		if (!signedInUser) return;
+
+		const wishlistProducts = await Promise.all(
+			signedInUser.wishlist.map(async (productId) => {
+				const res = await getProductDetails(productId);
+				return res;
+			})
+		);
+
+		setWishlist(wishlistProducts);
+		setLoading(false);
+	};
+
+	useEffect(() => {
+		if (signedInUser) {
+			getWishlistProducts();
+		}
+	}, [signedInUser]);
+
+	const updateSignedInUser = (updatedUser: UserType) => {
+		setSignedInUser(updatedUser);
+	};
+
 	if (loading) {
 		return <Loader />;
 	}
 
 	return (
 		<main className="bg-wishList-bg dark:bg-[#2E2E2E]">
-			{wishlistItems?.length === 0 ? (
+			{wishlist?.length === 0 ? (
 				<section className="flex justify-center items-center pt-[147px] pb-[223px]">
 					<div className="flex flex-col gap-[14px] text-center">
 						<Image
@@ -97,7 +156,7 @@ function WishList() {
 							<ButtonPrimary
 								type="button"
 								label="Continue Shopping"
-								onClick={() => router.push("/product")}
+								href="/product"
 							/>
 						</div>
 					</div>
@@ -109,14 +168,18 @@ function WishList() {
 					} `}
 				>
 					<h1 className="mb-8 font-open-sans font-semibold text-2xl leading-[32.68px] text-black dark:text-white">
-						You’ve got a great sense of style!
+						You&apos;ve got a great sense of style!
 					</h1>
 					<p className="mb-4 font-rubik font-medium text-base leading-[18.96px] text-black dark:text-white">
-						Favourites ({wishlistItems?.length})
+						Favourites ({wishlist?.length})
 					</p>
 					<div className="grid gap-8">
-						{currentProducts?.map((wishlistItem) => (
-							<WishListCard key={wishlistItem?._id} product={wishlistItem} />
+						{currentProducts?.map((wishlist) => (
+							<WishListCard
+								key={wishlist?._id}
+								product={wishlist}
+								updateSignedInUser={updateSignedInUser}
+							/>
 						))}
 					</div>
 				</section>
@@ -139,20 +202,10 @@ function WishList() {
 					<RecentlyViewed />
 				</div>
 			</section>
-
-			{/* trendy products */}
-			{trendyProducts?.length > 0 ? (
-				<section className="px-[5%] pb-[94px]">
-					<div className="sm:px-6">
-						<h2 className="font-open-sans font-semibold sm:text-2xl text-black dark:text-white pb-4 sm:pb-6">
-							You might also love one or more of these
-						</h2>
-						<Slider prods={trendyProducts} />
-					</div>
-				</section>
-			) : null}
 		</main>
 	);
-}
+};
 
-export default WishList;
+export const dynamic = "force-dynamic";
+
+export default Wishlist;

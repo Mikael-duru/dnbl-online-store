@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 const CookieNotice = () => {
@@ -127,12 +128,12 @@ const CookieNotice = () => {
 				<p className="policy-text pb-4">
 					If you have questions about how we process your personal data or wish
 					to exercise your legal rights, please contact us at{" "}
-					<a
+					<Link
 						href="mailto:Dnblfashion@denobleslimited.com"
 						className="text-blue-600 hover:underline"
 					>
 						Dnblfashion@denobleslimited.com
-					</a>
+					</Link>
 					.
 				</p>
 			</section>

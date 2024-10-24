@@ -1,5 +1,5 @@
 import Image from "next/image";
-import RegisterForm from "@/components/RegisterForm";
+import RegisterForm from "@/components/authentication/RegisterForm";
 
 function SignUp() {
 	return (

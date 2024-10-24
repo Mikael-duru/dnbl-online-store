@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Mail } from "lucide-react";
 
-import ButtonPrimary from "@/components/ButtonPrimary";
+import ButtonPrimary from "@/components/custom-buttons/ButtonPrimary";
 
 function ForgetPassword() {
 	const [email, setEmail] = useState("");
@@ -105,13 +105,13 @@ function ForgetPassword() {
 						<ButtonPrimary type="button" label="Send Code" />
 
 						<div className="flex items-center justify-center mt-10 lg:hidden">
-								<Image
-									src="/assets/logo-black.svg"
-									width={60}
-									height={60}
-									alt="DNBL logo"
-								/>
-							</div>
+							<Image
+								src="/assets/logo-black.svg"
+								width={60}
+								height={60}
+								alt="DNBL logo"
+							/>
+						</div>
 					</form>
 				</div>
 			</div>

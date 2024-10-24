@@ -10,7 +10,7 @@ import {
 } from "firebase/auth";
 
 import LeftSideBar from "@/components/user-dashboard/LeftSideBar";
-import ButtonPrimary from "@/components/ButtonPrimary";
+import ButtonPrimary from "@/components/custom-buttons/ButtonPrimary";
 import { auth } from "@/firebase/firebase";
 import AlertCard from "@/components/AlertCard";
 

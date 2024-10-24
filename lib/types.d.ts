@@ -1,14 +1,61 @@
-type ProductType = {
-  _id: string;               // Unique identifier for the product
-  media: string[];           // Array of image URLs or paths for the product
-  productName: string;       // Name of the product
-  newPrice: number;          // Current price of the product
-  oldPrice: number;          // Previous price (if any) for showing discounts
-  description: string;       // Detailed description of the product
-  material: string;          // Material of the product
-  categories: string[];      // List of categories, e.g., 'men', 'women', 'children', 'featured', 'trendy'
-  sizes: string[];           // Available sizes for the product
-  colors: string[];          // Available colors for the product
-  createdAt: string;         // Timestamp of when the product was created
-  quantity: number;          // Amount of the product that is available
+type CollectionType = {
+  _id: string;
+  title: string;
+  products: number;
+  image: string;
 };
+
+type ProductType = {
+  _id: string;
+  title: string;
+  description: string;
+  media: [string];
+  category: string;
+  collections: [string];
+  tags: [string];
+  sizes: [string];
+  colors: [string];
+  material: string;
+  price: number; 
+  oldPrice: number;
+  cost: number;
+  quantity: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+type UserType = {
+  firebaseId: string;
+  wishlist: [string];
+  orders: [string];
+  createdAt: string;
+  updatedAt: string;
+};
+
+type ReviewType = {
+  productId: string;
+  name: string;
+  ImageUrl: string;
+  date: Date;
+  rating: number;
+  reviewTitle: string;
+  reviewMessage: string;
+};
+
+type OrderType = {
+  shippingAddress: object;
+  _id: string;
+  customerFirebaseId: string;
+  products: [OrderItemType]
+  shippingRate: string;
+  totalAmount: number;
+  status: string;
+}
+
+type OrderItemType = {
+  product: ProductType;
+  color: string;
+  size: string;
+  quantity: number;
+  _id: string;
+}

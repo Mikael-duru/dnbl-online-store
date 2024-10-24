@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import ButtonPrimary from "@/components/ButtonPrimary";
+import ButtonPrimary from "@/components/custom-buttons/ButtonPrimary";
 import Modal from "@/components/Modal";
 import { confirmPasswordReset } from "firebase/auth";
 import { auth } from "@/firebase/firebase";

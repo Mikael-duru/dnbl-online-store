@@ -1,9 +1,7 @@
-// FilterSection.tsx
 import React from "react";
 
 import CustomDropdown from "@/components/CustomDropdown";
 import { Separator } from "@/components/ui/separator";
-import slugify from "slugify";
 
 const FilterSection = ({
 	categories,
@@ -71,7 +69,7 @@ const FilterSection = ({
 			<div className="w-full max-w-sm mx-auto mb-[28px]">
 				<CustomDropdown
 					options={materials?.map((material: any) => ({
-						value: `${slugify(material)}`,
+						value: material,
 						label: `${material.charAt(0).toUpperCase() + material.slice(1)}`,
 					}))}
 					selectedOption={selectedMaterial}

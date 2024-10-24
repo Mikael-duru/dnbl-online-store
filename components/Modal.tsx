@@ -2,7 +2,7 @@
 
 import { FC, useState, useEffect } from "react";
 import Image from "next/image";
-import ButtonPrimary from "./ButtonPrimary";
+import ButtonPrimary from "./custom-buttons/ButtonPrimary";
 
 interface ModalProps {
 	isOpen: boolean;

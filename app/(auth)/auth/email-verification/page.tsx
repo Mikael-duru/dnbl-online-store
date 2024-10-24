@@ -20,7 +20,7 @@ import {
 	InputOTPGroup,
 	InputOTPSlot,
 } from "@/components/ui/input-otp";
-import Button from "@/components/Button";
+import Button from "@/components/custom-buttons/Button";
 import {
 	doc,
 	getDoc,
